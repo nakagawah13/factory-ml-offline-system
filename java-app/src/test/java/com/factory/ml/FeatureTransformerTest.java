@@ -8,15 +8,34 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Unit tests for FeatureTransformer service.
+ * 
+ * Tests feature transformation logic for converting InputRow data into
+ * ONNX-compatible float and string tensor formats.
+ * 
+ * @see FeatureTransformer
+ */
 public class FeatureTransformerTest {
 
     private FeatureTransformer featureTransformer;
 
+    /**
+     * Sets up test fixtures before each test.
+     * 
+     * Initializes a new FeatureTransformer instance.
+     */
     @BeforeEach
     public void setUp() {
         featureTransformer = new FeatureTransformer();
     }
 
+    /**
+     * Tests creation of float buffer input for ONNX.
+     * 
+     * Verifies that InputRow data is correctly transformed into a FloatBuffer
+     * with the expected capacity and values.
+     */
     @Test
     public void testCreateFloatInput() {
         List<InputRow> rows = new ArrayList<>();
@@ -31,6 +50,12 @@ public class FeatureTransformerTest {
         assertEquals(200.0, floatInput.get(2));
     }
 
+    /**
+     * Tests creation of string array input for ONNX.
+     * 
+     * Verifies that InputRow data is correctly transformed into a String array
+     * containing categorical features.
+     */
     @Test
     public void testCreateStringInput() {
         List<InputRow> rows = new ArrayList<>();

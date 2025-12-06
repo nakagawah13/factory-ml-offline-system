@@ -7,15 +7,33 @@ import com.factory.ml.model.ValidationError;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Unit tests for DataValidator service.
+ * 
+ * Tests data validation logic including valid data, invalid data,
+ * and edge cases such as empty data.
+ * 
+ * @see DataValidator
+ */
 public class DataValidatorTest {
 
     private DataValidator dataValidator;
 
+    /**
+     * Sets up test fixtures before each test.
+     * 
+     * Initializes a new DataValidator instance.
+     */
     @BeforeEach
     public void setUp() {
         dataValidator = new DataValidator();
     }
 
+    /**
+     * Tests validation with valid data.
+     * 
+     * Verifies that properly formatted data passes validation without errors.
+     */
     @Test
     public void testValidateValidData() {
         List<String[]> validData = new ArrayList<>();
@@ -26,6 +44,12 @@ public class DataValidatorTest {
         assertTrue(errors.isEmpty(), "Validation should pass for valid data");
     }
 
+    /**
+     * Tests validation with invalid data.
+     * 
+     * Verifies that malformed data (invalid numbers, wrong categories)
+     * produces validation errors.
+     */
     @Test
     public void testValidateInvalidData() {
         List<String[]> invalidData = new ArrayList<>();
@@ -36,6 +60,11 @@ public class DataValidatorTest {
         assertFalse(errors.isEmpty(), "Validation should fail for invalid data");
     }
 
+    /**
+     * Tests validation with empty data.
+     * 
+     * Verifies that empty data is rejected by the validator.
+     */
     @Test
     public void testValidateEmptyData() {
         List<String[]> emptyData = new ArrayList<>();
