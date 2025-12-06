@@ -1,8 +1,12 @@
+---
+applyTo: "**"
+---
+
 # AI Code Examples Reference
 
 このファイルは、[ai-code-writing.instructions.md](./ai-code-writing.instructions.md) の補足資料として、実践的なコード例とベストプラクティスを提供します。
 
-**高度な型定義やデザインパターンについては**: [ai-advanced-patterns.md](./ai-advanced-patterns.md)
+**高度な型定義やデザインパターンについては**: [ai-advanced-patterns.instructions.md](./ai-advanced-patterns.instructions.md)
 
 ---
 

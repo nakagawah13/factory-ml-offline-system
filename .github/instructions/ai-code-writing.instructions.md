@@ -9,8 +9,8 @@ applyTo: "**"
 このファイルは、AIがコードを執筆する際の指示を定義します。一貫性のある高品質なコードを維持するための必須要件を規定します。
 
 **詳細な例とリファレンス**:
-- [ai-code-examples-reference.md](./ai-code-examples-reference.md) - 実践的なコード例集
-- [ai-advanced-patterns.md](./ai-advanced-patterns.md) - 高度な型定義とデザインパターン
+- [ai-code-examples-reference.instructions.md](./ai-code-examples-reference.instructions.md) - 実践的なコード例集
+- [ai-advanced-patterns.instructions.md](./ai-advanced-patterns.instructions.md) - 高度な型定義とデザインパターン
 
 ---
 
@@ -273,5 +273,5 @@ def _validate_schema(data: pd.DataFrame) -> bool:
 ## 参考資料
 
 詳細な例と高度なパターンについては以下を参照:
-- [ai-code-examples-reference.md](./ai-code-examples-reference.md) - 実践的なコード例集
-- [ai-advanced-patterns.md](./ai-advanced-patterns.md) - 高度な型定義とデザインパターン
+- [ai-code-examples-reference.instructions.md](./ai-code-examples-reference.instructions.md) - 実践的なコード例集
+- [ai-advanced-patterns.instructions.md](./ai-advanced-patterns.instructions.md) - 高度な型定義とデザインパターン

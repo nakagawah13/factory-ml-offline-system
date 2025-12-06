@@ -1,8 +1,12 @@
+---
+applyTo: "**"
+---
+
 # AI Advanced Patterns Reference
 
 このファイルは、[ai-code-writing.instructions.md](./ai-code-writing.instructions.md) の補足資料として、高度な型定義やデザインパターンを提供します。
 
-**注意**: これらのパターンは必要な場合にのみ使用してください。基本的なコードには [ai-code-examples-reference.md](./ai-code-examples-reference.md) を参照してください。
+**注意**: これらのパターンは必要な場合にのみ使用してください。基本的なコードには [ai-code-examples-reference.instructions.md](./ai-code-examples-reference.instructions.md) を参照してください。
 
 ---
 
@@ -559,4 +563,4 @@ def fetch_data(source: DataSource, query: str) -> List[Dict[str, Any]]:
 3. **Callable型**: 高階関数やコールバックを多用する場合
 4. **Protocol**: ダックタイピングを型安全に行いたい場合
 
-基本的なコードには、これらの高度なパターンは不要です。[ai-code-examples-reference.md](./ai-code-examples-reference.md) の基本パターンを優先してください。
+基本的なコードには、これらの高度なパターンは不要です。[ai-code-examples-reference.instructions.md](./ai-code-examples-reference.instructions.md) の基本パターンを優先してください。
