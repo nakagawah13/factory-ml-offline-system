@@ -1,5 +1,5 @@
 ---
-applyTo: "**"
+applyTo: "**/*.py,**/*.java,**/*.js,**/*.ts,**/*.tsx,**/*.jsx"
 ---
 
 # AI Advanced Patterns Reference
