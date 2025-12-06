@@ -695,11 +695,27 @@ git switch -c refactor/fix-directory-structure
 ```bash
 # 一度に全て修正せず、段階的に実施
 1. まず utilities/ の内容を utils/ に移動
+   # ファイル・ディレクトリの移動は git mv を使用
+   git mv src/utilities/helper.py src/utils/helper.py
+   
 2. import文を修正
+   # コード内のimport文、パス参照を更新
+   
 3. テスト実行
-4. utilities/ を削除
+   # 変更が正しく動作するか確認
+   
+4. utilities/ を削除（空ディレクトリの場合）
+   # 空ディレクトリの削除は git rm -r を使用
+   git rm -r src/utilities/
+   
 5. コミット
+   git commit -m "refactor: utilities/ を utils/ に統合"
 ```
+
+**重要**: ファイル・ディレクトリの移動・削除時の必須ルール
+- **移動**: `git mv` を使用（履歴を保持）
+- **削除**: `git rm -r` を使用（ディレクトリごと削除）
+- 通常の `mv` や `rm` コマンドは使用しない（Git履歴が途切れる）
 
 #### ステップ5: 検証
 
