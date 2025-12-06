@@ -21,11 +21,22 @@ This directory contains the Python components of the Factory ML Offline System, 
 
 ## Requirements
 
-To install the necessary dependencies, run:
+### Installation with uv (Recommended)
 
+```bash
+# Install all dependencies from project root
+cd ..
+uv sync
 ```
+
+### Installation with pip (Fallback for offline environments)
+
+```bash
+# Install from auto-generated requirements.txt
 pip install -r requirements.txt
 ```
+
+**Note**: The `requirements.txt` file is automatically generated from the root `pyproject.toml` using `uv export`.
 
 ## Usage
 

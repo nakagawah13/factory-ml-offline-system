@@ -24,37 +24,13 @@ from pathlib import Path
 import argparse
 from typing import Any
 
-# Note: These functions are placeholders and need to be implemented
-# These imports will cause mypy errors until actual implementations exist
-# 注: これらの関数はプレースホルダーであり、実装が必要です
-try:
-    from trainer.data_loader import load_data  # type: ignore[attr-defined]
-    from trainer.preprocessor import preprocess_data  # type: ignore[attr-defined]
-    from trainer.model_trainer import train_model  # type: ignore[attr-defined]
-    from trainer.onnx_converter import convert_to_onnx  # type: ignore[attr-defined]
-    from trainer.report_generator import generate_report  # type: ignore[attr-defined]
-except AttributeError:
-    # Functions not yet implemented - placeholders for future implementation
-    # 関数が未実装 - 将来の実装用のプレースホルダー
-    def load_data(path: str) -> Any:
-        """Placeholder for data loading function."""
-        raise NotImplementedError("load_data is not yet implemented")
-    
-    def preprocess_data(data: Any) -> Any:
-        """Placeholder for preprocessing function."""
-        raise NotImplementedError("preprocess_data is not yet implemented")
-    
-    def train_model(data: Any, config: str) -> Any:
-        """Placeholder for model training function."""
-        raise NotImplementedError("train_model is not yet implemented")
-    
-    def convert_to_onnx(model: Any, path: Any) -> None:
-        """Placeholder for ONNX conversion function."""
-        raise NotImplementedError("convert_to_onnx is not yet implemented")
-    
-    def generate_report(data: Any, model: Any, output: str) -> None:
-        """Placeholder for report generation function."""
-        raise NotImplementedError("generate_report is not yet implemented")
+# Import classes and functions from modules
+# モジュールからクラスと関数をインポート
+from trainer.data_loader import DataLoader
+from trainer.preprocessor import Preprocessor
+from trainer.model_trainer import ModelTrainer
+from trainer.report_generator import ReportGenerator
+# Note: onnx_converter is function-based, will be imported when needed
 
 
 def main() -> None:
@@ -122,27 +98,30 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    # Load data
-    # データの読み込み
-    data = load_data(args.data)
-
-    # Preprocess data
-    # データの前処理
-    processed_data = preprocess_data(data)
-
-    # Train model
-    # モデルの訓練
-    model = train_model(processed_data, args.config)
-
-    # Convert model to ONNX format
-    # モデルをONNX形式に変換
-    onnx_model_path = Path(args.output) / 'model.onnx'
-    convert_to_onnx(model, onnx_model_path)
-
-    # Generate report if requested
-    # レポート生成（オプション）
-    if args.report:
-        generate_report(processed_data, model, args.output)
+    print("Training pipeline started.")
+    print(f"Data: {args.data}")
+    print(f"Output: {args.output}")
+    print(f"Config: {args.config}")
+    print(f"Generate report: {args.report}")
+    
+    # TODO: Implement full pipeline
+    # This is a placeholder implementation for dependency migration testing
+    # 完全なパイプラインの実装は今後のタスクとなります
+    
+    # Example usage (commented out until implementation is complete):
+    # loader = DataLoader(schema)
+    # data = loader.load_data(args.data)
+    # transformer = FeatureTransformer()
+    # processed_data = transformer.transform(data)
+    # trainer = ModelTrainer(config)
+    # model = trainer.train(processed_data)
+    # converter = OnnxConverter()
+    # converter.convert(model, Path(args.output) / 'model.onnx')
+    # if args.report:
+    #     generator = ReportGenerator()
+    #     generator.generate(processed_data, model, args.output)
+    
+    print("Training pipeline completed (placeholder mode).")
 
 
 if __name__ == '__main__':

@@ -22,9 +22,16 @@
      ```
 
 2. **Pythonトレーナーのセットアップ**
-   - `python-trainer`ディレクトリ内で以下のコマンドを実行して、必要なライブラリをインストールします。
+   - プロジェクトルートで以下のコマンドを実行して、必要なライブラリをインストールします。
+     
+     **推奨方法 (uv使用)**:
+     ```bash
+     uv sync
      ```
-     pip install -r requirements.txt
+     
+     **フォールバック方法 (オフライン環境)**:
+     ```bash
+     pip install -r python-trainer/requirements.txt
      ```
 
 ## アプリケーションの起動
