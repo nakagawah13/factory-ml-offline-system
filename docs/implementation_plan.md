@@ -240,11 +240,11 @@ UIコントローラとテストコード（余裕があれば）
 
 | Task ID | 状態 | 担当 | 備考 |
 |---------|------|------|------|
-| T-001 | ⚪ Not Started | - | - |
-| T-002 | ⚪ Not Started | - | - |
-| T-003 | ⚪ Not Started | - | - |
-| T-004 | ⚪ Not Started | - | - |
-| T-005 | ⚪ Not Started | - | - |
+| T-001 | ✅ Done | AI | モジュールdocstring、型ヒント、関数docstring追加完了 |
+| T-002 | ✅ Done | AI | モジュールdocstring、クラス・メソッドdocstring、型ヒント追加完了 |
+| T-003 | ✅ Done | AI | モジュールdocstring、クラス・メソッドdocstring、型ヒント追加完了 |
+| T-004 | ✅ Done | AI | モジュールdocstring、クラス・メソッドdocstring、型ヒント追加完了 |
+| T-005 | ✅ Done | AI | モジュールdocstring、クラス・メソッドdocstring、型ヒント追加完了 |
 | T-006 | ⚪ Not Started | - | - |
 | T-007 | ⚪ Not Started | - | - |
 | T-008 | ⚪ Not Started | - | - |
@@ -345,9 +345,11 @@ UIコントローラとテストコード（余裕があれば）
 
 1. ✅ 作業ブランチ `refactor/add-type-hints-and-docstrings` を作成
 2. ✅ 実装計画ドキュメント作成
-3. ⚪ Phase 1実装開始（T-001から順次）
-4. ⚪ 各Phaseごとにコミット
-5. ⚪ PR作成・レビュー依頼
+3. ✅ Phase 1実装完了（T-001 ~ T-005）
+4. ✅ Phase 1コミット（2コミット: コード修正、ドキュメント修正）
+5. ⚪ Phase 2実装開始（T-006から順次）
+6. ⚪ 各Phaseごとにコミット
+7. ⚪ PR作成・レビュー依頼
 
 ---
 
