@@ -23,6 +23,7 @@ applyTo: "**"
 
 - **プロジェクト構造**: [ai-project-structure-core.instructions.md](../../.github/instructions/ai-project-structure-core.instructions.md)および関連ファイルで定義
 - **コード品質**: [ai-code-writing.instructions.md](../../.github/instructions/ai-code-writing.instructions.md)で定義
+- **ML/AI実験管理**: [git-workflow-ml-experiments.instructions.md](./git-workflow-ml-experiments.instructions.md)で定義
 - **Git操作とプロジェクト構造は独立**: Gitワークフローはディレクトリ構造のルールとは別に管理
 
 ---
@@ -55,6 +56,9 @@ applyTo: "**"
 | `feature` | 新機能の開発 | `feature/add-user-authentication` |
 | `bugfix` | バグ修正 | `bugfix/correct-data-validation` |
 | `experiment` | 実験的な実装・検証 | `experiment/test-new-algorithm` |
+| `model` | モデル開発・改善 | `model/implement-lightgbm` |
+| `train` | 訓練パイプライン | `train/add-cross-validation` |
+| `eval` | 評価・検証 | `eval/add-metrics-calculation` |
 | `data` | データ処理・前処理 | `data/add-feature-engineering` |
 | `refactor` | リファクタリング | `refactor/optimize-query-performance` |
 | `docs` | ドキュメント更新 | `docs/update-api-specification` |
@@ -120,7 +124,7 @@ git switch -c feature/your-feature-name
 git switch -c bugfix/bug-fix-name <commit-hash>
 ```
 
-#### 3. 変更をコミット
+#### 3. 変更を論理的な単位でコミット
 
 ```bash
 # ファイルをステージング
@@ -258,6 +262,17 @@ mv src/utils/ src/utilities/
 
 ---
 
+#### 大量ファイル操作時の注意
+
+機械学習プロジェクトでは、大量のファイル移動・削除が発生することがあります。以下の点に注意してください。
+
+- データファイルの整理時も`git mv` を使用
+- 実験結果の移動時も`git mv` を使用し、履歴を保持
+- 大量のファイルを一度に操作する場合、コミットを小分けにして履歴を明確に
+- スクリプトで自動化する場合も、Gitコマンドを使用
+
+---
+
 ## コミットメッセージの形式
 
 ### コミットメッセージ規約
@@ -280,6 +295,10 @@ mv src/utils/ src/utilities/
 |--------|------|-----|
 | `feat` | 新機能の追加 | `feat: add defect detection model` |
 | `fix` | バグ修正 | `fix: correct CSV parsing error` |
+| `model` | モデル開発・改善 | `model: implement lightgbm classifier` |
+| `train` | 訓練パイプライン変更 | `train: add cross-validation` |
+| `eval` | 評価・検証の追加・変更 | `eval: add confusion matrix calculation` |
+| `data` | データ処理・前処理の変更 | `data: add feature scaling` |
 | `docs` | ドキュメントのみの変更 | `docs: update API specification` |
 | `style` | コードの動作に影響しないスタイル変更 | `style: format Python files with black` |
 | `refactor` | バグ修正や機能追加を伴わないリファクタリング | `refactor: extract validation logic` |
@@ -399,14 +418,17 @@ git commit
 git commit -e
 ```
 
-**方法2**: `-m` を複数回使用
+**方法2**: Here-Doc を使用
 
 ```bash
-git commit -m "feat: add model retraining pipeline" \
-           -m "" \
-           -m "This commit introduces automated retraining:" \
-           -m "- Monitors performance metrics" \
-           -m "- Triggers retraining on degradation"
+git commit -F - <<`MSG`
+feat: add model retraining pipeline
+
+This commit introduces automated retraining:
+- Monitors performance metrics
+- Triggers retraining on degradation
+
+Closes #123
 ```
 
 **方法3**: 改行を含む文字列（bashの場合）
@@ -579,6 +601,13 @@ Refs #567
    - 本番環境の接続情報
    - 内部IPアドレス、ポート番号
 
+4. **データファイル（機密性・サイズの観点）**:
+   - **実データ**: 本番環境から取得した実際の生産データ
+   - **サンプルデータ**: 実データから抽出したサンプル（個人情報含む場合）
+   - **アノテーションデータ**: 手動でラベル付けした大容量データ
+   - **理由**: プライバシー保護、リポジトリサイズ肥大化防止
+   - **代替策**: データストレージ（S3、GCS等）で管理し、READMEにアクセス方法を記載
+
 ### 機密情報の管理方法
 
 **環境変数を使用**:
@@ -694,14 +723,48 @@ Refs #456
 
 ### PRレビューのガイドライン
 
-**レビュアーのチェックポイント**:
+ML/AIプロジェクトでは、以下の4つの観点からレビューを実施します。
 
-1. **機能性**: 意図した動作をするか
-2. **コード品質**: 読みやすく保守可能か
-3. **テスト**: 適切なテストがあるか
-4. **ドキュメント**: 必要な説明があるか
-5. **パフォーマンス**: 性能上の問題がないか
-6. **セキュリティ**: 脆弱性がないか
+#### 1. 技術レビュー
+
+**チェックポイント**:
+- **機能性**: 意図した動作をするか
+- **コード品質**: 読みやすく保守可能か
+- **テスト**: 適切なテストがあるか
+- **パフォーマンス**: 性能上の問題がないか
+- **セキュリティ**: 脆弱性がないか
+- **再現性**: 乱数シードが固定されているか
+
+#### 2. 実験レビュー（ML/AI特有）
+
+ML/AI実験のレビューについては、[git-workflow-ml-experiments.instructions.md](./git-workflow-ml-experiments.instructions.md)を参照してください。
+
+**主なチェックポイント**:
+- **実験設計**: 実験の目的と仮説が明確か
+- **評価指標**: 適切な評価指標が選択されているか
+- **ベースライン比較**: 既存モデルとの比較があるか
+- **結果の妥当性**: 結果が統計的に有意か
+- **過学習チェック**: train/validationの性能差は適切か
+- **実験記録**: 実験条件と結果が記録されているか
+
+#### 3. 設定レビュー
+
+**チェックポイント**:
+- **ハイパーパラメータ**: 設定値が妥当か、根拠があるか
+- **依存関係**: requirements.txtやpyproject.tomlが更新されているか
+- **環境変数**: 機密情報がハードコードされていないか
+- **設定ファイル**: config/配下のファイルが適切に更新されているか
+- **バージョン互換性**: ライブラリバージョンの変更が他に影響しないか
+
+#### 4. ドキュメントレビュー（完整性）
+
+**チェックポイント**:
+- **README更新**: 機能追加・変更がREADMEに反映されているか
+- **API仕様**: 新しいAPIのドキュメントがあるか
+- **インラインコメント**: 複雑なロジックに説明があるか
+- **Docstring**: すべての公開関数・クラスにdocstringがあるか
+- **変更履歴**: 破壊的変更がCHANGELOGに記載されているか
+- **実験ノート**: 実験結果と考察が記録されているか
 
 **レビューコメントの例**:
 
