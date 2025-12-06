@@ -1,0 +1,24 @@
+{
+  "version": "1.0",
+  "columns": [
+    {
+      "name": "timestamp",
+      "type": "DATE",
+      "format": "yyyy-MM-dd",
+      "required": true
+    },
+    {
+      "name": "product_type",
+      "type": "CATEGORY",
+      "allowed_values": ["A", "B", "C"],
+      "required": true
+    },
+    {
+      "name": "sensor_val_1",
+      "type": "NUMERIC",
+      "min": 0.0,
+      "max": 1000.0
+    }
+    // ... 合計165列分
+  ]
+}
