@@ -14,6 +14,20 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.util.List;
 
+/**
+ * Controller for the Inference tab in the Factory ML GUI.
+ * 
+ * This controller manages the inference tab UI, allowing users to load data,
+ * validate it, and run model inference. Displays results in a table view.
+ * 
+ * <p>Project Context:
+ * Part of the factory-ml-offline-system JavaFX GUI. Provides the interface
+ * for batch inference operations on loaded data.
+ * 
+ * @see InferenceService
+ * @see DataValidator
+ * @see FeatureTransformer
+ */
 public class InferenceTabController {
 
     @FXML
@@ -32,18 +46,35 @@ public class InferenceTabController {
     private final FeatureTransformer featureTransformer;
     private final InferenceService inferenceService;
 
+    /**
+     * Constructs an InferenceTabController.
+     * 
+     * Initializes service instances for data validation, feature transformation,
+     * and model inference.
+     */
     public InferenceTabController() {
         this.dataValidator = new DataValidator();
         this.featureTransformer = new FeatureTransformer();
         this.inferenceService = new InferenceService();
     }
 
+    /**
+     * Initializes the controller after FXML loading.
+     * 
+     * Sets up event handlers for UI buttons.
+     */
     @FXML
     private void initialize() {
         loadDataButton.setOnAction(event -> loadData());
         runInferenceButton.setOnAction(event -> runInference());
     }
 
+    /**
+     * Loads data from a user-selected file.
+     * 
+     * Opens a file chooser dialog for CSV or Excel files, loads the data,
+     * validates it, and displays it in the table view.
+     */
     private void loadData() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
@@ -62,6 +93,12 @@ public class InferenceTabController {
         }
     }
 
+    /**
+     * Runs inference on the loaded data.
+     * 
+     * Retrieves input data from the table view, performs inference using
+     * the inference service, and displays the results.
+     */
     private void runInference() {
         List<InputRow> inputData = dataTable.getItems();
         InferenceResult result = inferenceService.predict(inputData);
