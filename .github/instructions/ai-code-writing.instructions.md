@@ -8,9 +8,10 @@ applyTo: "**/*.py,**/*.java,**/*.js,**/*.ts,**/*.tsx,**/*.jsx"
 
 このファイルは、AIがコードを執筆する際の指示を定義します。一貫性のある高品質なコードを維持するための必須要件を規定します。
 
-**詳細な例とリファレンス**:
+**関連ガイドライン**:
 - [ai-code-examples-reference.instructions.md](./ai-code-examples-reference.instructions.md) - 実践的なコード例集
 - [ai-advanced-patterns.instructions.md](./ai-advanced-patterns.instructions.md) - 高度な型定義とデザインパターン
+- [ai-project-structure-core.instructions.md](./ai-project-structure-core.instructions.md) - プロジェクト構造保護ルール
 
 ---
 
