@@ -1,0 +1,17 @@
+{
+  "current_model_path": "models/current/model.onnx",
+  "gray_zone_threshold": {
+    "min": 0.4,
+    "max": 0.6
+  },
+  "simulation_settings": {
+    "default_values": {
+      "temperature": 25,
+      "pressure": 1
+    }
+  },
+  "report_generation": {
+    "enabled": true,
+    "output_format": "html"
+  }
+}
