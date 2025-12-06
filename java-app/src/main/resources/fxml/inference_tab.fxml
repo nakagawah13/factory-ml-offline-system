@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.factory.ml.controller.InferenceTabController">
+    <VBox spacing="10" alignment="TOP_LEFT">
+        <Label text="推論タブ" styleClass="header-label"/>
+        
+        <Button fx:id="loadDataButton" text="Load Data" onAction="#handleLoadData"/>
+        <Button fx:id="runInferenceButton" text="Run Inference" onAction="#handleRunInference" disable="true"/>
+        
+        <TableView fx:id="dataPreviewTable">
+            <!-- Define columns for data preview here -->
+        </TableView>
+        
+        <Label fx:id="validationMessage" text="" styleClass="validation-message"/>
+    </VBox>
+</AnchorPane>

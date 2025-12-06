@@ -1,0 +1,50 @@
+/* 
+ * This is the main stylesheet for the Factory ML Offline System application.
+ * It defines the styles for various components used in the JavaFX application.
+ */
+
+/* General application styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Button styles */
+.button {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+    -fx-padding: 10px 20px;
+    -fx-font-size: 14px;
+    -fx-border-radius: 5px;
+}
+
+.button:hover {
+    -fx-background-color: #0056b3;
+}
+
+/* Label styles */
+.label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #333;
+}
+
+/* Table view styles */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px;
+}
+
+/* Input field styles */
+.text-field {
+    -fx-padding: 10px;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5px;
+}
+
+/* Error message styles */
+.error-message {
+    -fx-text-fill: red;
+    -fx-font-weight: bold;
+}

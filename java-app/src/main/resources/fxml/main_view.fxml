@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600.0" prefWidth="800.0" fx:controller="com.factory.ml.controller.InferenceTabController">
+    <children>
+        <TabPane>
+            <tabs>
+                <Tab text="推論">
+                    <content>
+                        <VBox spacing="10.0" alignment="CENTER">
+                            <Button text="Load Data" onAction="#handleLoadData"/>
+                            <Button text="Run Inference" onAction="#handleRunInference"/>
+                            <Button text="Simulation" onAction="#handleSimulation"/>
+                        </VBox>
+                    </content>
+                </Tab>
+                <Tab text="学習">
+                    <content>
+                        <VBox spacing="10.0" alignment="CENTER">
+                            <Button text="Select Training Data" onAction="#handleSelectTrainingData"/>
+                            <Button text="Start Training" onAction="#handleStartTraining"/>
+                        </VBox>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </children>
+</AnchorPane>
