@@ -96,6 +96,7 @@
 | T-010 | `python-trainer/src/analysis/metrics_calculator.py` | モジュールdocstring、関数docstring、型ヒント追加 | 30分 | ✅ Done |
 
 **Phase 2 合計**: 約3時間 (実績: 約3時間)
+**Phase 2 完了日**: 2025-12-07
 
 ### Phase 3: Java Core Services (高優先度)
 
@@ -107,9 +108,10 @@
 | T-012 | `java-app/.../service/InferenceService.java` | クラスJavadoc、メソッドJavadoc追加 | 60分 |
 | T-013 | `java-app/.../service/ModelManagerService.java` | クラスJavadoc、メソッドJavadoc追加 | 45分 |
 | T-014 | `java-app/.../util/ConfigLoader.java` | クラスJavadoc、メソッドJavadoc追加 | 30分 |
-| T-015 | `java-app/.../model/Schema.java` | クラスJavadoc、フィールド・メソッドJavadoc追加 | 60分 |
+| T-015 | `java-app/.../model/Schema.java` | クラスJavadoc、フィールド・メソッドJavadoc追加 | 60分 | ✅ Done |
 
-**Phase 3 合計**: 約3.5時間
+**Phase 3 合計**: 約3.5時間 (実績: 約3.5時間)
+**Phase 3 完了日**: 2025-12-07
 
 ### Phase 4: Java Supporting Classes
 
@@ -245,16 +247,16 @@ UIコントローラとテストコード（余裕があれば）
 | T-003 | ✅ Done | AI | モジュールdocstring、クラス・メソッドdocstring、型ヒント追加完了 |
 | T-004 | ✅ Done | AI | モジュールdocstring、クラス・メソッドdocstring、型ヒント追加完了 |
 | T-005 | ✅ Done | AI | モジュールdocstring、クラス・メソッドdocstring、型ヒント追加完了 |
-| T-006 | ⚪ Not Started | - | - |
-| T-007 | ⚪ Not Started | - | - |
-| T-008 | ⚪ Not Started | - | - |
-| T-009 | ⚪ Not Started | - | - |
-| T-010 | ⚪ Not Started | - | - |
-| T-011 | ⚪ Not Started | - | - |
-| T-012 | ⚪ Not Started | - | - |
-| T-013 | ⚪ Not Started | - | - |
-| T-014 | ⚪ Not Started | - | - |
-| T-015 | ⚪ Not Started | - | - |
+| T-006 | ✅ Done | AI | モジュールdocstring、関数docstring、型ヒント追加完了 |
+| T-007 | ✅ Done | AI | モジュールdocstring、クラス・メソッドdocstring、型ヒント追加完了 |
+| T-008 | ✅ Done | AI | モジュールdocstring、関数docstring、型ヒント追加完了 |
+| T-009 | ✅ Done | AI | モジュールdocstring、クラス・メソッドdocstring、型ヒント追加完了 |
+| T-010 | ✅ Done | AI | モジュールdocstring、関数docstring、型ヒント追加完了 |
+| T-011 | ✅ Done | AI | クラスJavadoc、メソッドJavadoc追加完了 |
+| T-012 | ✅ Done | AI | クラスJavadoc、メソッドJavadoc追加完了 |
+| T-013 | ✅ Done | AI | クラスJavadoc、メソッドJavadoc追加完了 |
+| T-014 | ✅ Done | AI | クラスJavadoc、メソッドJavadoc追加完了 |
+| T-015 | ✅ Done | AI | クラスJavadoc、フィールド・メソッドJavadoc追加完了 |
 | T-016 | ⚪ Not Started | - | - |
 | T-017 | ⚪ Not Started | - | - |
 | T-018 | ⚪ Not Started | - | - |
