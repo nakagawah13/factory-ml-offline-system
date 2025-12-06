@@ -32,8 +32,31 @@
 3. 必要に応じてモデルの再学習を行い、結果を分析します。
 
 ## 開発環境
+
+### 依存関係のインストール
+
+**推奨方法 (uv使用)**:
+```bash
+uv sync
+```
+
+**フォールバック方法 (オフライン環境)**:
+```bash
+pip install -r python-trainer/requirements.txt
+```
+
+### ビルドとテスト
+
 - **Java:** Mavenを使用してビルド
-- **Python:** 必要なライブラリは`requirements.txt`からインストール
+  ```bash
+  cd java-app
+  mvn clean install
+  ```
+
+- **Python:** uvを使用してトレーナーを実行
+  ```bash
+  uv run trainer --help
+  ```
 
 ## ライセンス
 このプロジェクトはMITライセンスの下で提供されています。
