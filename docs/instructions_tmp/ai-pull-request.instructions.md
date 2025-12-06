@@ -167,7 +167,7 @@ model: implement LightGBM classifier with feature engineering
 
 ## PR本文の必須セクション (MUST)
 
-PR本文には以下のセクションを**必ず**含めてください。
+PR本文には以下のセクションを**必ず**含めてください。見出しは見出し2(##)を最大とし、詳細項目は見出し3(###)を使用します。
 
 ### 1. 変更概要（What）
 
@@ -255,17 +255,17 @@ PR本文には以下のセクションを**必ず**含めてください。
 ```markdown
 ## 影響範囲
 
-### 変更ファイル
-- `python-trainer/src/trainer/data_loader.py` - バリデーション呼び出し追加
-- `python-trainer/src/trainer/validator.py` - 新規作成
-- `config/schema.json` - 新規作成
+- **変更ファイル**:
+  - `python-trainer/src/trainer/data_loader.py` - バリデーション呼び出し追加
+  - `python-trainer/src/trainer/validator.py` - 新規作成
+  - `config/schema.json` - 新規作成
 
-### 依存モジュール
-- `preprocessor.py` - DataLoaderを使用（動作確認済み）
-- `model_trainer.py` - DataLoaderを使用（動作確認済み）
+- **依存モジュール**:
+  - `preprocessor.py` - DataLoaderを使用（動作確認済み）
+  - `model_trainer.py` - DataLoaderを使用（動作確認済み）
 
-### 設定変更
-- `config/app_settings.json` に `validation.enabled` オプションを追加
+- **設定変更**:
+  - `config/app_settings.json` に `validation.enabled` オプションを追加
 ```
 
 ---
@@ -302,7 +302,7 @@ PR本文には以下のセクションを**必ず**含めてください。
 | 統合テスト | データパイプライン全体 | ❌ Fail |
 | Lint | ruff check | ✅ Pass |
 
-### 失敗の詳細
+**失敗の詳細**:
 
 **統合テスト失敗**:
 - 原因: 大容量データ（100万行以上）でメモリ不足が発生
@@ -342,22 +342,22 @@ PR本文には以下のセクションを**必ず**含めてください。
 | 後方互換性 | 非互換 |
 | API変更 | レスポンス形式変更（CSV → JSON） |
 
-### 破壊的変更の詳細
+**破壊的変更の詳細**:
 
-**変更内容**: 推論APIのレスポンス形式がCSVからJSONに変更
+変更内容: 推論APIのレスポンス形式がCSVからJSONに変更
 
-**Before**:
+Before:
 ```csv
 timestamp,value,prediction
 2025-12-06T10:00:00,42.5,0
 ```
 
-**After**:
+After:
 ```json
 {"timestamp": "2025-12-06T10:00:00", "value": 42.5, "prediction": 0}
 ```
 
-**移行方法**:
+移行方法:
 1. クライアント側のパーサーをJSON対応に更新
 2. `Accept: application/json` ヘッダーを追加
 3. 移行期間（2週間）は `?format=csv` パラメータで旧形式も利用可能
@@ -402,10 +402,9 @@ timestamp,value,prediction
 ```markdown
 ## 実験結果
 
-### 目的
-不良品検出精度の向上
+**目的**: 不良品検出精度の向上
 
-### 評価指標
+**評価指標**:
 
 | モデル | Accuracy | Precision | Recall | F1 |
 |--------|----------|-----------|--------|-----|
@@ -413,16 +412,16 @@ timestamp,value,prediction
 | **Proposed** | **85.5%** | **83.4%** | **87.8%** | **85.5%** |
 | 改善幅 | +3.2% | +3.3% | +3.6% | +3.4% |
 
-### 考察
+**考察**:
 - lag特徴量の追加が時系列パターンの捕捉に寄与
 - false positiveが15%減少し、実運用での誤報削減が期待される
 - 推論時間は平均2ms増加（許容範囲内）
 
-### 再現性情報
-- **Random Seed**: 42
-- **Dataset**: 2025-12-01 to 2025-12-05
-- **Train/Test Split**: 80/20
-- **Git Tag**: `exp-lag-features-v1`
+**再現性情報**:
+- Random Seed: 42
+- Dataset: 2025-12-01 to 2025-12-05
+- Train/Test Split: 80/20
+- Git Tag: `exp-lag-features-v1`
 ```
 
 ---
