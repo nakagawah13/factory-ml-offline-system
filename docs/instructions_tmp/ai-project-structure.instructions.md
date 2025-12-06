@@ -154,7 +154,8 @@ python-trainer/
 新しいディレクトリを作成する前に、**必ず以下を確認**:
 
 1. **既存ディレクトリの確認**
-   - `grep_search` または `list_dir` で既存構造を把握
+   - `tree` コマンドで既存構造を視覚的に把握
+   - `grep_search` で類似名称のディレクトリを検索
    - 類似名称のディレクトリが存在しないか確認
 
 2. **名称の統一性チェック**
@@ -190,7 +191,7 @@ python-trainer/
 既存のプロジェクト構造を**徹底的に調査**すること。
 
 **必須の検索項目**:
-- `list_dir` で関連ディレクトリ構造を把握
+- `tree` コマンドでプロジェクト全体の構造を視覚的に把握
 - `grep_search` で類似名称のディレクトリ・ファイルを検索
 - `file_search` で既存の同目的ファイルを探索
 - `semantic_search` で機能的に類似するコードを検出
@@ -272,7 +273,7 @@ python-trainer/
 
 1. STOP: 即座に作成せず立ち止まる
 2. SEARCH: 
-   - list_dir で src/ 配下を確認
+   - tree コマンドでプロジェクト構造を視覚的に確認
    - grep_search で "valid" を検索
    - 発見: src/validators/ が既に存在
 3. ANALYZE:
@@ -320,12 +321,12 @@ flowchart TD
     Stop --> Question[本当に必要か？<br/>既存で代替できないか？]
     Question --> Search[SEARCH<br/>既存構造を徹底調査]
     
-    Search --> ListDir[list_dir で<br/>ディレクトリ構造確認]
+    Search --> Tree[tree コマンドで<br/>プロジェクト構造を視覚的に確認]
     Search --> GrepSearch[grep_search で<br/>類似名称検索]
     Search --> FileSearch[file_search で<br/>同目的ファイル検索]
     Search --> SemanticSearch[semantic_search で<br/>機能的類似コード検出]
     
-    ListDir --> Analyze
+    Tree --> Analyze
     GrepSearch --> Analyze
     FileSearch --> Analyze
     SemanticSearch --> Analyze
@@ -571,7 +572,7 @@ feature-branch/      # ブランチ名
 
 **対処法**:
 1. STOP-SEARCH-ANALYZE-CONFIRM-CREATE プロセスを厳守
-2. 必ず `list_dir` と `grep_search` を実行
+2. 必ず `tree` コマンドと `grep_search` を実行
 3. 既存構造との整合性を確認
 
 **予防策**: 作成前に必ず既存構造を確認する習慣をつける
@@ -659,7 +660,7 @@ feature-branch/      # ブランチ名
 
 ```bash
 # 既存構造を確認
-list_dir で全体構造を把握
+tree コマンドで全体構造を視覚的に把握
 
 # 重複を検索
 grep_search で類似名称を検索
@@ -754,7 +755,7 @@ git switch -c refactor/fix-directory-structure
 作成前に必ずすべて確認すること:
 
 - [ ] **STOP**: 立ち止まって必要性を再考した
-- [ ] **SEARCH**: `list_dir` で既存構造を確認した
+- [ ] **SEARCH**: `tree` コマンドで既存構造を視覚的に確認した
 - [ ] **SEARCH**: `grep_search` で類似名称を検索した
 - [ ] **SEARCH**: `file_search` で同目的ファイルを探した
 - [ ] **ANALYZE**: 既存ディレクトリで代替できないか検討した
