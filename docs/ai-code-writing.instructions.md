@@ -8,6 +8,80 @@ applyTo: "**"
 
 このファイルは、AIがコードを執筆する際の指示を定義します。一貫性のある高品質なコードを維持するための必須要件を規定します。
 
+## 言語使用ガイドライン
+
+### Docstringとコメントの言語選択原則
+
+本プロジェクトでは、ツールチェーン(Ruff等のリンター)との互換性とAIツールとの協調性を重視し、以下の方針を採用します。
+
+#### 基本方針: ハイブリッドアプローチ
+
+1. **コード要素(必須)**: 英語
+   - 関数名、クラス名、変数名、モジュール名
+   - 理由: 国際的な標準、AIツールとの親和性、将来的な国際化対応
+
+2. **Docstring**: 英語 + 重要部分に日本語併記
+   - 1行目の概要: 英語(ピリオド `.` で終わる)
+   - 詳細説明: 英語で記述し、必要に応じて日本語を括弧書きで補足
+   - 理由: Ruff等のリンターとの完全互換性、AIツールが最も理解しやすい
+
+3. **型ヒント**: 英語(Python標準)
+   - `List[int]`, `Optional[str]`, `Dict[str, Any]` など
+
+4. **インラインコメント**: 日本語可
+   - 複雑なビジネスロジックや計算式の説明
+   - ドメイン知識が必要な箇所
+
+5. **定数の説明コメント**: 日本語可
+   - 設定値の意味、単位、影響範囲の説明
+
+6. **エラーメッセージ**: 日本語推奨
+   - エンドユーザーや運用チームが読む可能性があるため
+
+#### Ruffとの互換性に関する重要な注意
+
+Ruffのデフォルト設定では、docstringの1行目が英語のピリオド `.` で終わることを期待しています(D400ルール)。
+日本語の句点 `。` で終わるとエラーになるため、以下のいずれかの対応が必要です:
+
+**推奨: 英語docstring + 日本語併記**
+```python
+def process_data(data: pd.DataFrame) -> pd.DataFrame:
+    """Process input data for analysis.
+    
+    入力データを分析用に前処理します。欠損値の処理、正規化、
+    特徴量エンジニアリングを実行します。
+    
+    Args:
+        data (pd.DataFrame): Input data to process.
+                            (処理対象の入力データ)
+    
+    Returns:
+        pd.DataFrame: Processed data ready for analysis.
+                     (分析準備が完了した処理済みデータ)
+    """
+```
+
+**代替案: Ruff設定の調整**
+```toml
+# pyproject.toml
+[tool.ruff.lint]
+ignore = ["D400"]  # docstringの1行目がピリオドで終わる要件を無効化
+```
+
+ただし、この方法は業界標準から逸脱するため、特別な理由がない限り推奨しません。
+
+### 言語選択の判断基準
+
+| 要素 | 言語 | 理由 |
+|------|------|------|
+| 関数名・クラス名 | 英語 | 国際標準、AI理解、将来の国際化 |
+| 変数名 | 英語 | コードの可読性、一貫性 |
+| Docstring 1行目 | 英語 | リンター互換、AI最適化 |
+| Docstring 詳細 | 英語+日本語併記 | 正確性と標準準拠の両立 |
+| インラインコメント | 日本語可 | ドメイン知識の正確な伝達 |
+| エラーメッセージ | 日本語 | ユーザビリティ |
+| ログメッセージ | 日本語 | 運用チームの利便性 |
+
 ## 必須要件
 
 ### Google Style Docstring の必須実装
@@ -165,8 +239,114 @@ def batch_generator(data, batch_size=32):
 - docstringは必ず三重引用符(`"""`)で囲む
 - インデントはコードブロックと統一する
 - 型ヒント(type hints)がある場合でも、docstringで型を明記する
-- 日本語で記述する場合は、専門用語は適切に使用する
+- **1行目の概要は英語で記述し、ピリオド `.` で終わる**(Ruff互換のため)
+- 詳細説明では、必要に応じて日本語を併記する
 - 1行の概要は命令形または説明形で記述する
+
+#### 英語+日本語併記の実践例
+
+本プロジェクトで推奨される、Ruff互換かつ日本語も含む記述スタイル:
+
+**実践例1: 工場データ処理関数**
+
+```python
+def calculate_defect_rate(total_count: int, defect_count: int) -> float:
+    """Calculate the defect rate from production counts.
+    
+    全体の生産数と不良品数から不良品率(%)を計算します。
+    結果は小数点以下2桁に丸められます。
+    
+    Args:
+        total_count (int): Total number of products. Must be positive.
+                          (全生産数。正の整数である必要があります)
+        defect_count (int): Number of defective products. 
+                           Must be between 0 and total_count.
+                           (不良品数。0以上でtotal_count以下)
+    
+    Returns:
+        float: Defect rate as percentage (0.0 to 100.0).
+              (不良品率(パーセント)。0.0から100.0の範囲)
+    
+    Raises:
+        ValueError: If total_count is not positive or defect_count is invalid.
+                   (total_countが正でない、またはdefect_countが不正な場合)
+    
+    Examples:
+        >>> calculate_defect_rate(1000, 25)
+        2.5
+        >>> calculate_defect_rate(500, 0)
+        0.0
+    """
+    if total_count <= 0:
+        raise ValueError("total_countは正の整数である必要があります")
+    if defect_count < 0 or defect_count > total_count:
+        raise ValueError("defect_countは0以上、total_count以下である必要があります")
+    
+    rate = (defect_count / total_count) * 100
+    return round(rate, 2)
+```
+
+**実践例2: クラスのdocstring**
+
+```python
+class ProductionLineMonitor:
+    """Monitor production line status and detect anomalies.
+    
+    生産ラインの状態を監視し、異常を検出するクラスです。
+    リアルタイムデータを受け取り、統計的手法で異常値を判定します。
+    
+    Attributes:
+        line_id (str): Production line identifier.
+                      (生産ライン識別子)
+        threshold (float): Anomaly detection threshold (z-score).
+                          (異常検知閾値(zスコア))
+        history (List[float]): Historical data for baseline calculation.
+                              (ベースライン計算用の履歴データ)
+    
+    Examples:
+        >>> monitor = ProductionLineMonitor("LINE-A", threshold=3.0)
+        >>> monitor.add_measurement(25.5)
+        >>> is_anomaly = monitor.check_anomaly(45.2)
+        >>> print(is_anomaly)
+        True
+    """
+    
+    def __init__(self, line_id: str, threshold: float = 3.0) -> None:
+        """Initialize the production line monitor.
+        
+        Args:
+            line_id (str): Production line identifier.
+                          (生産ライン識別子)
+            threshold (float, optional): Anomaly detection threshold.
+                                        Defaults to 3.0.
+                                        (異常検知閾値。デフォルトは3.0)
+        """
+        self.line_id = line_id
+        self.threshold = threshold
+        self.history: List[float] = []
+```
+
+**実践例3: 簡潔な関数(日本語補足なし)**
+
+簡単な関数では、英語のみで十分明確な場合は日本語を省略可:
+
+```python
+def normalize_temperature(celsius: float) -> float:
+    """Normalize temperature value to 0-1 range.
+    
+    Args:
+        celsius (float): Temperature in Celsius (-50 to 150).
+    
+    Returns:
+        float: Normalized value between 0.0 and 1.0.
+    
+    Raises:
+        ValueError: If temperature is out of valid range.
+    """
+    if not -50 <= celsius <= 150:
+        raise ValueError("温度は-50℃から150℃の範囲である必要があります")
+    return (celsius + 50) / 200
+```
 
 ### ファイル冒頭コメントの必須実装
 
@@ -830,3 +1010,280 @@ class DataQuality(Enum):
 - 設定を変更する際の影響範囲を示す
 - グローバル変数は極力避け、使用する場合は用途を明確にする
 - 関連する定数は Config クラスや Enum でグループ化する
+
+### 3. AIツール(GitHub Copilot)との協調
+
+GitHub Copilotが最も効果的に機能するための推奨事項:
+
+#### 命名規則
+
+**関数名は動詞で始める:**
+```python
+# Good: AIが目的を即座に理解できる
+def calculate_average(values: List[float]) -> float:
+def validate_input_data(data: pd.DataFrame) -> bool:
+def process_raw_data(file_path: str) -> pd.DataFrame:
+def transform_features(data: pd.DataFrame) -> np.ndarray:
+
+# Avoid: 目的が不明確
+def average(values: List[float]) -> float:
+def data(data: pd.DataFrame) -> bool:
+def handler(file_path: str) -> pd.DataFrame:
+```
+
+**変数名は説明的に:**
+```python
+# Good: AIがコンテキストを理解できる
+defect_count: int = 25
+temperature_celsius: float = 45.5
+total_production_time_minutes: int = 120
+anomalous_data_points: List[float] = []
+
+# Avoid: 意味が不明確
+x: int = 25
+temp: float = 45.5
+time: int = 120
+data: List[float] = []
+```
+
+**クラス名は名詞で、役割を明確に:**
+```python
+# Good
+class DataValidator:
+class ModelTrainer:
+class FeatureTransformer:
+class ProductionLineMonitor:
+
+# Avoid
+class Data:
+class Model:
+class Helper:
+class Manager:
+```
+
+#### 型ヒントを必ず記述
+
+AIが引数と戻り値の型を理解することで、より正確なコード補完が可能になります:
+
+```python
+# Good: 型が明確でAIが次のコードを正確に予測できる
+def merge_dataframes(
+    left: pd.DataFrame,
+    right: pd.DataFrame,
+    on: str,
+    how: str = "inner"
+) -> pd.DataFrame:
+    return pd.merge(left, right, on=on, how=how)
+
+# Avoid: 型が不明でAIの補完精度が低下
+def merge_dataframes(left, right, on, how="inner"):
+    return pd.merge(left, right, on=on, how=how)
+```
+
+#### Docstringの1行目を明確に
+
+AIは最初の1行でコンテキストを把握します:
+
+```python
+# Good: 明確な動詞+目的で始まる
+def preprocess_sensor_data(raw_data: pd.DataFrame) -> pd.DataFrame:
+    """Preprocess raw sensor data for machine learning.
+    
+    センサーの生データを機械学習用に前処理します。
+    """
+
+# Avoid: 曖昧な説明
+def preprocess_sensor_data(raw_data: pd.DataFrame) -> pd.DataFrame:
+    """Data processing.
+    
+    データを処理します。
+    """
+```
+
+#### コンテキストを提供するコメント
+
+複雑なロジックには、AIが理解できるようにコンテキストを提供:
+
+```python
+def detect_anomalies(data: pd.DataFrame, threshold: float = 3.0) -> pd.DataFrame:
+    """Detect anomalies using z-score method.
+    
+    Args:
+        data (pd.DataFrame): Time series data with 'value' column.
+        threshold (float): Z-score threshold for anomaly detection.
+    
+    Returns:
+        pd.DataFrame: Data with 'is_anomaly' column added.
+    """
+    # Calculate z-score for each data point
+    # Z-score = (value - mean) / std
+    mean = data['value'].mean()
+    std = data['value'].std()
+    data['z_score'] = (data['value'] - mean) / std
+    
+    # Flag values exceeding threshold as anomalies
+    # 閾値を超える値を異常値としてフラグ付け
+    data['is_anomaly'] = data['z_score'].abs() > threshold
+    
+    return data
+```
+
+### 4. エラーメッセージとログの言語ガイドライン
+
+エラーメッセージとログの言語選択は、対象読者によって使い分けます。
+
+#### エラーメッセージ: 日本語推奨
+
+エンドユーザーや運用チームが読む可能性があるため、日本語を使用:
+
+```python
+def load_csv_file(file_path: str) -> pd.DataFrame:
+    """Load data from CSV file.
+    
+    Args:
+        file_path (str): Path to the CSV file.
+    
+    Returns:
+        pd.DataFrame: Loaded data.
+    
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        ValueError: If the file format is invalid.
+    """
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(
+            f"ファイルが見つかりません: {file_path}"
+        )
+    
+    try:
+        data = pd.read_csv(file_path)
+    except pd.errors.ParserError as e:
+        raise ValueError(
+            f"CSVファイルの形式が不正です: {file_path}\n"
+            f"詳細: {str(e)}"
+        )
+    
+    if data.empty:
+        raise ValueError(
+            f"ファイルにデータが含まれていません: {file_path}"
+        )
+    
+    return data
+```
+
+#### バリデーションエラー: 日本語で具体的に
+
+```python
+def validate_production_data(data: pd.DataFrame) -> None:
+    """Validate production data schema and values.
+    
+    Args:
+        data (pd.DataFrame): Production data to validate.
+    
+    Raises:
+        ValueError: If validation fails.
+    """
+    required_columns = ['timestamp', 'temperature', 'pressure', 'defect_flag']
+    missing_columns = [col for col in required_columns if col not in data.columns]
+    
+    if missing_columns:
+        raise ValueError(
+            f"必須カラムが不足しています: {', '.join(missing_columns)}\n"
+            f"必要なカラム: {', '.join(required_columns)}"
+        )
+    
+    if data['temperature'].min() < -50 or data['temperature'].max() > 150:
+        raise ValueError(
+            "温度の値が有効範囲(-50℃〜150℃)を超えています\n"
+            f"最小値: {data['temperature'].min()}℃\n"
+            f"最大値: {data['temperature'].max()}℃"
+        )
+    
+    if not data['defect_flag'].isin([0, 1]).all():
+        raise ValueError(
+            "defect_flagは0または1である必要があります"
+        )
+```
+
+#### ログメッセージ: 日本語推奨
+
+運用チームが読むため、日本語で記録:
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+def train_model(data_path: str, output_path: str) -> Dict[str, float]:
+    """Train machine learning model.
+    
+    Args:
+        data_path (str): Path to training data.
+        output_path (str): Path to save trained model.
+    
+    Returns:
+        Dict[str, float]: Training metrics.
+    """
+    logger.info(f"モデル訓練を開始します: {data_path}")
+    
+    try:
+        data = load_data(data_path)
+        logger.info(f"データ読み込み完了: {len(data)} 件")
+        
+        model = train_lightgbm(data)
+        logger.info("モデル訓練完了")
+        
+        metrics = evaluate_model(model, data)
+        logger.info(
+            f"評価結果 - Accuracy: {metrics['accuracy']:.3f}, "
+            f"Precision: {metrics['precision']:.3f}, "
+            f"Recall: {metrics['recall']:.3f}"
+        )
+        
+        save_model(model, output_path)
+        logger.info(f"モデルを保存しました: {output_path}")
+        
+        return metrics
+        
+    except Exception as e:
+        logger.error(f"モデル訓練中にエラーが発生しました: {str(e)}")
+        raise
+```
+
+#### アサーションメッセージ: 開発者向けは英語または日本語
+
+開発者向けのデバッグ情報は、チームの状況に応じて選択:
+
+```python
+def calculate_metrics(predictions: np.ndarray, labels: np.ndarray) -> Dict[str, float]:
+    """Calculate classification metrics.
+    
+    Args:
+        predictions (np.ndarray): Predicted labels.
+        labels (np.ndarray): True labels.
+    
+    Returns:
+        Dict[str, float]: Calculated metrics.
+    """
+    assert len(predictions) == len(labels), \
+        f"予測値とラベルの長さが一致しません: {len(predictions)} vs {len(labels)}"
+    
+    assert predictions.ndim == 1, \
+        f"予測値は1次元配列である必要があります: shape={predictions.shape}"
+    
+    assert set(predictions).issubset({0, 1}), \
+        "予測値は0または1である必要があります"
+    
+    # Calculate metrics
+    accuracy = (predictions == labels).mean()
+    # ...
+```
+
+#### 言語選択のまとめ
+
+| メッセージ種別 | 対象読者 | 推奨言語 | 理由 |
+|--------------|---------|---------|------|
+| 例外メッセージ | エンドユーザー/運用 | 日本語 | 理解しやすさ |
+| ログメッセージ | 運用チーム | 日本語 | 運用効率 |
+| アサーション | 開発者 | 英語or日本語 | チーム方針次第 |
+| デバッグ出力 | 開発者 | 英語or日本語 | チーム方針次第 |
