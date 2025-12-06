@@ -17,7 +17,8 @@ applyTo: "**"
 ## 関連ガイドライン
 
 - **基本Gitワークフロー**: [git-workflow.instructions.md](./git-workflow.instructions.md)で定義
-- **プロジェクト構造**: [ai-project-structure-ml.instructions.md](../../.github/instructions/ai-project-structure-ml.instructions.md)で定義
+- **PR作成**: [ai-pull-request.instructions.md](./ai-pull-request.instructions.md)で定義
+- **プロジェクト構造**: [ai-project-structure-ml.instructions.md](./ai-project-structure-ml.instructions.md)で定義
 
 ---
 

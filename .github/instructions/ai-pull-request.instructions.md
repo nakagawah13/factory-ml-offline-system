@@ -20,8 +20,8 @@ AIがPull Request（PR）を作成・更新する際に、一貫性のある高�
 
 ### 関連ガイドライン
 
-- **Gitワークフロー**: [git-workflow.instructions.md](../../docs/instructions_tmp/git-workflow.instructions.md) - ブランチ戦略、コミット規約
-- **ML実験管理**: [git-workflow-ml-experiments.instructions.md](../../docs/instructions_tmp/git-workflow-ml-experiments.instructions.md) - 実験レビュー観点
+- **Gitワークフロー**: [git-workflow.instructions.md](./git-workflow.instructions.md) - ブランチ戦略、コミット規約
+- **ML実験管理**: [git-workflow-ml-experiments.instructions.md](./git-workflow-ml-experiments.instructions.md) - 実験レビュー観点
 - **コード品質**: [ai-code-writing.instructions.md](./ai-code-writing.instructions.md) - コードスタイル
 
 ---

@@ -21,9 +21,10 @@ applyTo: "**"
 
 ### 他ガイドラインとの関係
 
-- **プロジェクト構造**: [ai-project-structure-core.instructions.md](../../.github/instructions/ai-project-structure-core.instructions.md)および関連ファイルで定義
-- **コード品質**: [ai-code-writing.instructions.md](../../.github/instructions/ai-code-writing.instructions.md)で定義
+- **プロジェクト構造**: [ai-project-structure-core.instructions.md](./ai-project-structure-core.instructions.md)および関連ファイルで定義
+- **コード品質**: [ai-code-writing.instructions.md](./ai-code-writing.instructions.md)で定義
 - **ML/AI実験管理**: [git-workflow-ml-experiments.instructions.md](./git-workflow-ml-experiments.instructions.md)で定義
+- **PR作成**: [ai-pull-request.instructions.md](./ai-pull-request.instructions.md)で定義
 - **Git操作とプロジェクト構造は独立**: Gitワークフローはディレクトリ構造のルールとは別に管理
 
 ---
@@ -198,7 +199,7 @@ git checkout <commit-hash> -- <file>
 
 ファイルの移動、削除、名前変更を行う際は、**Gitの履歴追跡を維持する**ために、以下のコマンドを必ず使用してください。
 
-**重要**: プロジェクト構造の保護やディレクトリ作成に関するルールは [ai-project-structure-core.instructions.md](../../.github/instructions/ai-project-structure-core.instructions.md) を参照してください。
+**重要**: プロジェクト構造の保護やディレクトリ作成に関するルールは [ai-project-structure-core.instructions.md](./ai-project-structure-core.instructions.md) を参照してください。
 
 #### ファイル移動・名前変更
 
