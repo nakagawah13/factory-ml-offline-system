@@ -120,6 +120,25 @@ def process_data(
 
 すべてのPythonファイルの冒頭にモジュールdocstringを必ず記述してください。
 
+#### 必要な情報
+
+- ファイルの役割と機能
+- 主要なクラスや関数の概要
+- プロジェクト内での位置づけ
+- 使用方法の簡単な例
+
+#### 重要な注意点
+
+- モジュールdocstringは必ずファイルの最初に配置（shebang/エンコーディング宣言の後）
+- 三重引用符(`"""`)で囲む
+- 1行目は簡潔な概要で、ピリオドで終わる
+- 空行を挟んで詳細説明を記述
+- Main Components セクションで主要なコンポーネントを箇条書き
+- Project Context セクションでプロジェクト内での役割を説明
+- Example セクションで実際の使用例を含める
+
+#### 基本例
+
 ```python
 """Data preprocessing and feature engineering module.
 
@@ -139,6 +158,8 @@ Example:
     >>> data = loader.load_csv("data/input/raw_data.csv")
 """
 ```
+
+詳細な実装例については [ai-code-examples-reference.instructions.md](./ai-code-examples-reference.instructions.md) のファイル冒頭コメント詳細例を参照
 
 ---
 

@@ -341,6 +341,13 @@ class ProductionLineMonitor:
 
 ## ファイル冒頭コメント詳細例
 
+モジュールdocstringには以下を含めてください:
+- **1行の簡潔な概要**: ピリオド `.` で終わる（Ruff互換のため必須）
+- **詳細な機能説明**: 複数段落で具体的に説明
+- **Main Components**: 主要なクラス・関数を箇条書き
+- **Project Context**: プロジェクト内での位置づけと役割
+- **Example**: 実際の使用例（import文と基本的な使い方）
+
 ### データ処理モジュール
 
 ```python
