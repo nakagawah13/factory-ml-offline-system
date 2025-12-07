@@ -92,7 +92,7 @@ Expected files:
 - metadata.json: Model version and training information
 ```
 
-→ これらの説明は`models/README.md`に統合すべき（将来のタスク）
+→ これらの説明を`models/README.md`に統合済み
 
 ---
 
