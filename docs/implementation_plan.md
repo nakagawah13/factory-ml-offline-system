@@ -4,7 +4,7 @@
 
 このドキュメントは、models/とdata/配下の不正なファイル/ディレクトリ構造を修正する計画です。
 
-**注意**: 本PR (#27) では models/ ディレクトリのみを対応します。data/ ディレクトリは既に正常な状態であるため、変更対象外です。
+**注意**: 本PR (#27) は主に `models/` の修正を目的としますが、テストフィクスチャの整理のために `python-trainer/tests/fixtures/` と `.gitignore` の小さな変更も含まれます。`data/` ディレクトリは変更対象外です。
 
 **Issue**: #15 - models/とdata/のディレクトリ構造修正
 **ブランチ**: `fix/directory-structure-models-data`
@@ -71,6 +71,14 @@ models/current: UTF-8 Unicode text
 |------|------|------|
 | `data/input` | ✅ ディレクトリ（正常） | Issue #15の計画に含まれるが、既に正常なため修正不要 |
 | `data/output` | ✅ ディレクトリ（正常） | Issue #15の計画に含まれるが、既に正常なため修正不要 |
+
+### このPRで追加で整理した項目（ドキュメント/テスト整理）
+
+| パス | 変更内容 | 備考 |
+|------|---------|------|
+| `python-trainer/tests/fixtures/models/` | テスト用モデルフィクスチャを配置（`model.joblib` を移動） | 大容量の `.joblib` は `.gitignore`で除外し追跡しない |
+| `python-trainer/tests/fixtures/reports/` | テスト用レポートを配置（`training_summary.json` を移動・コミット） | テスト再現性向上のため JSON は追跡 |
+| `.gitignore` | `python-trainer/tests/fixtures/models/*.joblib` を追加 | 大きなバイナリを追跡しないため |
 
 ### 既存ファイルの内容確認
 
@@ -164,7 +172,7 @@ git add models/archive/.gitkeep models/current/.gitkeep
    - 削除した2つのファイルの内容を統合
    - archive/とcurrent/の役割を説明
    - 命名規則とバージョニングポリシーを記載
-   - test/ディレクトリについても記載（既存ディレクトリ）
+   - **注記**: `models/test/` はリポジトリ内に残すべきではないため削除し、テストフィクスチャは `python-trainer/tests/fixtures/` に移動済みであることを明記
 
 **検証方法**:
 - `file models/archive`が`directory`を返す
@@ -213,9 +221,9 @@ Bash で直接入力する場合は改行を含む文字列として記述して
 **実装コマンド**:
 ```bash
 gh pr create \
-  --title "fix: convert models/archive and models/current to directories" \
-  --body-file .github/pr_body_template.md \
-  --base main
+   --title "fix: convert models/archive and models/current to directories" \
+   --body-file .github/pull_request_template.md \
+   --base main
 ```
 
 **PR本文のポイント**:
@@ -237,8 +245,9 @@ gh pr create \
 | T-001 | 既存ファイルの削除 | 5分 | ✅ Done | git rm で削除完了 |
 | T-002 | ディレクトリ作成と.gitkeep追加 | 5分 | ✅ Done | mkdir, touch, git add で完了 |
 | T-003 | 構造検証とドキュメント作成 | 5分 | ✅ Done | 構造確認とREADME.md作成完了 |
-| T-004 | コミットとプッシュ | 5分 | ✅ Done | 2コミット、プッシュ完了 |
+| T-004 | コミットとプッシュ | 5分 | ✅ Done | 3コミット、プッシュ完了 |
 | T-005 | PR作成 | 10分 | ✅ Done | PR #27 作成・本文更新完了 |
+| T-006 | テストフィクスチャ整理 | 5分 | ✅ Done | `models/test/` を `python-trainer/tests/fixtures/` に移動（JSONは追跡、.joblibは除外） |
 
 **状態凡例**:
 - ⚪ Not Started（未着手）
@@ -267,6 +276,7 @@ gh pr create \
 3. ✅ Task 3: 構造検証
 4. ✅ Task 4: コミットとプッシュ
 5. ✅ Task 5: PR作成
+6. ✅ Task 6: テストフィクスチャの移動と `.gitignore` 更新
 
 ## 参考資料
 

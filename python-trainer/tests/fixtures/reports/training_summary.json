@@ -1,5 +1,5 @@
 {
-  "model_path": "models/test/model.joblib",
+  "model_path": "python-trainer/tests/fixtures/models/model.joblib",
   "onnx_path": null,
   "data_shape": [
     20,
