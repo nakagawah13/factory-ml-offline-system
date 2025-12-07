@@ -1,7 +1,7 @@
 # 一時ディレクトリ削除実装計画
 
 ## 概要
-
+**見積時間**: 6分
 このドキュメントは、空の一時ディレクトリ `docs/instructions_tmp/` を削除する計画です。
 
 **Issue**: #16 - chore: remove empty temporary directory docs/instructions_tmp/
@@ -21,19 +21,16 @@
 **現状**:
 ```bash
 $ ls -la docs/instructions_tmp/
-total 8
 drwxr-xr-x 2 nakagawa6 nakagawa6 4096 Dec  7 00:59 .
 drwxr-xr-x 3 nakagawa6 nakagawa6 4096 Dec  7 18:30 ..
 ```
 
 完全に空のディレクトリです。
 
-### プロジェクト構造保護ガイドラインとの関連
-
 `.github/instructions/ai-project-structure-core.instructions.md` では以下のように禁止されています:
 
-```
 ❌ 絶対禁止
+---
 temp/, tmp/, test_folder/, experiment/, sandbox/
 ```
 
