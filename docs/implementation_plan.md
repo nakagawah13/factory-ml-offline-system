@@ -464,17 +464,17 @@ mvn javafx:run
 
 | Task | Epic | 見積時間 | 状態 | 備考 |
 |------|------|---------|------|------|
-| T-1-1 | Phase 1 | 5分 | ⚪ Not Started | JavaFX Web依存関係追加 |
-| T-1-2 | Phase 1 | 25分 | ⚪ Not Started | InputRowメソッド実装 |
-| T-2-1 | Phase 2 | 20分 | ⚪ Not Started | ONNX Runtime API調査 |
-| T-2-2 | Phase 2 | 40分 | ⚪ Not Started | InferenceService修正 |
-| T-2-3 | Phase 2 | 30分 | ⚪ Not Started | SimulationService修正 |
-| T-3-1 | Phase 3 | 25分 | ⚪ Not Started | TrainingTabController修正 |
-| T-3-2 | Phase 3 | 20分 | ⚪ Not Started | InferenceTabController修正 |
-| T-3-3 | Phase 3 | 15分 | ⚪ Not Started | SimulationViewController修正 |
-| T-4-1 | Phase 4 | 10分 | ⚪ Not Started | コンパイル成功確認 |
-| T-4-2 | Phase 4 | 10分 | ⚪ Not Started | 単体テスト実行 |
-| T-4-3 | Phase 4 | 10分 | ⚪ Not Started | アプリケーション起動確認 |
+| T-1-1 | Phase 1 | 5分 | ✅ Done | JavaFX Web依存関係追加完了 |
+| T-1-2 | Phase 1 | 25分 | ✅ Done | InputRowメソッド実装完了 |
+| T-2-1 | Phase 2 | 20分 | ✅ Done | ONNX Runtime 1.15.0 API調査完了 |
+| T-2-2 | Phase 2 | 40分 | ✅ Done | InferenceService修正完了 |
+| T-2-3 | Phase 2 | 30分 | ✅ Done | SimulationService修正完了 |
+| T-3-1 | Phase 3 | 25分 | ✅ Done | TrainingTabController修正完了 |
+| T-3-2 | Phase 3 | 20分 | ✅ Done | InferenceTabController修正完了 |
+| T-3-3 | Phase 3 | 15分 | ✅ Done | SimulationViewController修正完了 |
+| T-4-1 | Phase 4 | 10分 | ✅ Done | コンパイル成功確認 (BUILD SUCCESS) |
+| T-4-2 | Phase 4 | 10分 | ⏸️ Blocked | 単体テストにコンパイルエラーあり (次PR対応) |
+| T-4-3 | Phase 4 | 10分 | ⚪ Not Started | アプリケーション起動確認 (次PR対応) |
 
 **状態凡例**:
 - ⚪ Not Started（未着手）
@@ -482,6 +482,43 @@ mvn javafx:run
 - ✅ Done（完了）
 - ⏸️ Blocked（ブロック中）
 - ❌ Cancelled（キャンセル）
+
+## 実装完了サマリー
+
+### 完了した修正 (2025-12-07 19:39)
+
+**Phase 1: 依存関係とモデルクラス修正 ✅**
+- pom.xmlにjavafx-web依存関係を追加
+- InputRowにコピーコンストラクタ、setValue()、getFloatInput()、getStringInput()を実装
+
+**Phase 2: ONNX Runtime API対応 ✅**
+- ONNX Runtime 1.15.0の新API (Map、OrtSession.Result) に対応
+- convertToDoubleArray()メソッドを実装し型変換を正しく処理
+- SimulationServiceのInferenceService呼び出しを修正
+
+**Phase 3: Controllerクラス修正 ✅**
+- TrainingTabController: サービスクラスのコンストラクタ引数を追加、CSV読み込みロジックを実装
+- InferenceTabController: 同様の修正とloadCsvAsInputRows()ヘルパー追加
+- SimulationViewController: import文を追加し、runSimulation()を修正
+
+**Phase 4: 統合テスト ⏸️ (部分完了)**
+- メインコードのコンパイル成功 (17ソースファイル)
+- 単体テストのコンパイルエラーは次PR対応予定
+
+### 残課題
+
+1. **単体テストのコンパイルエラー修正** (次PR対応)
+   - DataValidatorTest.javaにSyntaxエラー
+   - 優先度: Medium
+
+2. **スキーマ読み込み機能の実装** (次PR対応)
+   - 現在は空のSchemaオブジェクトを使用
+   - ConfigLoader.loadSchema()メソッドが必要
+   - 優先度: High
+
+3. **アプリケーション起動確認** (次PR対応)
+   - mvn javafx:run での動作確認
+   - 優先度: Medium
 
 ## 総作業時間見積
 
@@ -505,6 +542,6 @@ mvn javafx:run
 ## 参考資料
 
 - [Issue #10](https://github.com/nakagawah13/factory-ml-offline-system/issues/10)
-- [ONNX Runtime Java API Documentation](https://onnxruntime.ai/docs/api/java/api/)
+- [ONNX Runtime Java API Documentation](https://onnxruntime.ai/docs/api/java/index.html)
 - [ai-code-writing.instructions.md](../.github/instructions/ai-code-writing.instructions.md)
 - [git-workflow.instructions.md](../.github/instructions/git-workflow.instructions.md)
