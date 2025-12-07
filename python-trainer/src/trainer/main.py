@@ -59,8 +59,8 @@ def load_config(config_path: str) -> Dict[str, Any]:
     Raises:
         FileNotFoundError: If configuration file is not found.
                           (設定ファイルが見つからない場合)
-        json.JSONDecodeError: If JSON format is invalid.
-                             (JSON形式が不正な場合)
+        ValueError: If JSON format is invalid.
+                   (JSON形式が不正な場合)
     """
     try:
         with open(config_path, 'r', encoding='utf-8') as f:
@@ -79,14 +79,14 @@ def load_schema(schema_path: str) -> Dict[str, Any]:
                           (スキーマJSONファイルのパス)
     
     Returns:
-        Dict[str, Any]: Schema definition dictionary.
-                       (スキーマ定義辞書)
+        Dict[str, Any]: Schema dictionary.
+                       (スキーマ辞書)
     
     Raises:
         FileNotFoundError: If schema file is not found.
                           (スキーマファイルが見つからない場合)
-        json.JSONDecodeError: If JSON format is invalid.
-                             (JSON形式が不正な場合)
+        ValueError: If JSON format is invalid.
+                   (JSON形式が不正な場合)
     """
     try:
         with open(schema_path, 'r', encoding='utf-8') as f:
@@ -159,6 +159,12 @@ def main() -> None:
         action='store_true',
         help='Generate analysis report (SHAP, metrics, drift)'
     )
+    parser.add_argument(
+        '--schema',
+        type=str,
+        default='config/schema.json',
+        help='Path to schema JSON file (default: config/schema.json)'
+    )
 
     args = parser.parse_args()
 
@@ -179,11 +185,10 @@ def main() -> None:
         config = load_config(args.config)
         logger.info(f"  ✓ 設定ファイル読み込み完了: {args.config}")
         
-        # Schema path is fixed at config/schema.json
-        # スキーマパスはconfig/schema.jsonに固定
-        schema_path = Path(__file__).parent.parent.parent.parent / "config" / "schema.json"
-        schema = load_schema(str(schema_path))
-        logger.info(f"  ✓ スキーマファイル読み込み完了: {schema_path}")
+        # Load schema from specified path
+        # 指定されたパスからスキーマを読み込み
+        schema = load_schema(args.schema)
+        logger.info(f"  ✓ スキーマファイル読み込み完了: {args.schema}")
         logger.info("")
         
         # Validate training configuration exists
@@ -212,14 +217,20 @@ def main() -> None:
         logger.info(f"  カラム数: {len(data.columns)}")
         logger.info("")
         
-        # Step 3: Preprocess data
-        # ステップ3: データ前処理
-        logger.info("ステップ3: データを前処理しています...")
+        # Step 3: Validate data
+        # ステップ3: データバリデーション
+        logger.info("ステップ3: データを検証しています...")
         
+        # Note: Data preprocessing is handled internally by ModelTrainer
+        # The Preprocessor class provides schema-based validation and feature info
+        # 注: データ前処理はModelTrainerが内部で実行します
+        # Preprocessorクラスはスキーマベースの検証と特徴量情報を提供します
         preprocessor = Preprocessor(schema)
+        # Perform fit_transform to validate data structure and get feature count
+        # データ構造の検証と特徴量数の取得のためfit_transformを実行
         processed_data = preprocessor.fit_transform(data)
-        logger.info("  ✓ データ前処理完了")
-        logger.info(f"  処理後の特徴量数: {processed_data.shape[1]}")
+        logger.info("  ✓ データ検証完了")
+        logger.info(f"  検証済み特徴量数: {processed_data.shape[1]}")
         logger.info("")
         
         # Step 4: Train model
@@ -231,6 +242,8 @@ def main() -> None:
         output_dir = Path(args.output)
         output_dir.mkdir(parents=True, exist_ok=True)
         
+        # ModelTrainer.run() performs its own data loading and preprocessing
+        # ModelTrainer.run()は内部でデータ読み込みと前処理を実行します
         trainer = ModelTrainer(training_config)
         model_path = output_dir / 'model.joblib'
         trainer.run(args.data, str(model_path))

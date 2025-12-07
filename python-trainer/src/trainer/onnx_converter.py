@@ -123,11 +123,20 @@ def save_onnx_model(model: Any, output_dir: str, model_name: str) -> str:
         if hasattr(preprocessor, 'n_features_in_'):
             n_features = preprocessor.n_features_in_
         else:
-            # Fallback: use a default value
-            # フォールバック: デフォルト値を使用
-            n_features = 10
+            # Fail-fast: raise if n_features_in_ is missing
+            # フェイルファスト: n_features_in_がない場合はエラー
+            raise AttributeError(
+                "Preprocessor lacks 'n_features_in_' attribute. "
+                "Cannot determine input feature count for ONNX conversion."
+            )
     else:
-        n_features = getattr(model, 'n_features_in_', 10)
+        if hasattr(model, 'n_features_in_'):
+            n_features = model.n_features_in_
+        else:
+            raise AttributeError(
+                "Model lacks 'n_features_in_' attribute. "
+                "Cannot determine input feature count for ONNX conversion."
+            )
     
     # ONNX変換用の入力型を定義（FloatTensorTypeのみ）
     initial_types: List[Tuple[str, Any]] = [
