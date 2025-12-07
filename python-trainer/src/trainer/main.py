@@ -327,8 +327,7 @@ def main() -> None:
         logger.info("=" * 60)
         logger.info("出力ファイル:")
         logger.info(f"  - モデル: {model_path}")
-        if onnx_path:
-            logger.info(f"  - ONNXモデル: {onnx_path}")
+        # Note: ONNX output will be added when Issue #23 is implemented
         if args.report and report_path:
             logger.info(f"  - レポート: {report_path}")
         logger.info("")
