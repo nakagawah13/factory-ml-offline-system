@@ -22,7 +22,7 @@ Example:
 """
 
 from skl2onnx import convert_sklearn
-from skl2onnx.common.data_types import FloatTensorType, StringTensorType
+from skl2onnx.common.data_types import FloatTensorType
 import joblib
 import os
 from typing import Any, List, Tuple

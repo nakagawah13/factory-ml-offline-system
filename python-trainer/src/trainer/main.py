@@ -34,7 +34,6 @@ from typing import Any, Dict
 from trainer.data_loader import DataLoader
 from trainer.preprocessor import Preprocessor
 from trainer.model_trainer import ModelTrainer
-from trainer.report_generator import ReportGenerator
 
 # Configure logging
 # ロギング設定
@@ -196,7 +195,7 @@ def main() -> None:
             )
         
         training_config = config['training']
-        logger.info(f"  訓練設定:")
+        logger.info("  訓練設定:")
         logger.info(f"    - 数値特徴量: {training_config.get('numerical_features', [])}")
         logger.info(f"    - カテゴリ特徴量: {training_config.get('categorical_features', [])}")
         logger.info(f"    - ターゲット: {training_config.get('target', 'label')}")
@@ -219,7 +218,7 @@ def main() -> None:
         
         preprocessor = Preprocessor(schema)
         processed_data = preprocessor.fit_transform(data)
-        logger.info(f"  ✓ データ前処理完了")
+        logger.info("  ✓ データ前処理完了")
         logger.info(f"  処理後の特徴量数: {processed_data.shape[1]}")
         logger.info("")
         
@@ -235,7 +234,7 @@ def main() -> None:
         trainer = ModelTrainer(training_config)
         model_path = output_dir / 'model.joblib'
         trainer.run(args.data, str(model_path))
-        logger.info(f"  ✓ モデル訓練完了")
+        logger.info("  ✓ モデル訓練完了")
         logger.info(f"  モデル保存先: {model_path}")
         logger.info("")
         
@@ -266,8 +265,6 @@ def main() -> None:
             report_dir = output_dir / 'reports'
             report_dir.mkdir(parents=True, exist_ok=True)
             
-            generator = ReportGenerator(str(report_dir))
-            
             # Generate basic metrics report
             # 基本的なメトリクスレポートを生成
             # Note: Full report generation requires model evaluation results
@@ -283,7 +280,7 @@ def main() -> None:
             with open(report_path, 'w', encoding='utf-8') as f:
                 json.dump(metrics, f, indent=2, ensure_ascii=False)
             
-            logger.info(f"  ✓ レポート生成完了")
+            logger.info("  ✓ レポート生成完了")
             logger.info(f"  レポート保存先: {report_path}")
             logger.info("")
         
@@ -292,7 +289,7 @@ def main() -> None:
         logger.info("=" * 60)
         logger.info("✓ 訓練パイプラインが正常に完了しました")
         logger.info("=" * 60)
-        logger.info(f"出力ファイル:")
+        logger.info("出力ファイル:")
         logger.info(f"  - モデル: {model_path}")
         if onnx_path:
             logger.info(f"  - ONNXモデル: {onnx_path}")
@@ -303,7 +300,7 @@ def main() -> None:
     except FileNotFoundError as e:
         logger.error("")
         logger.error("=" * 60)
-        logger.error(f"❌ ファイルが見つかりません")
+        logger.error("❌ ファイルが見つかりません")
         logger.error("=" * 60)
         logger.error(str(e))
         logger.error("")
@@ -312,7 +309,7 @@ def main() -> None:
     except ValueError as e:
         logger.error("")
         logger.error("=" * 60)
-        logger.error(f"❌ データ検証エラー")
+        logger.error("❌ データ検証エラー")
         logger.error("=" * 60)
         logger.error(str(e))
         logger.error("")
@@ -321,7 +318,7 @@ def main() -> None:
     except Exception as e:
         logger.error("")
         logger.error("=" * 60)
-        logger.error(f"❌ 予期しないエラーが発生しました")
+        logger.error("❌ 予期しないエラーが発生しました")
         logger.error("=" * 60)
         logger.error(f"エラータイプ: {type(e).__name__}")
         logger.error(f"エラー内容: {str(e)}")
