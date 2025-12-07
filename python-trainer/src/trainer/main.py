@@ -46,6 +46,24 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def log_error_section(title: str, message: str) -> None:
+    """Log error with consistent formatting.
+    
+    This helper function reduces duplication in error handling blocks
+    by centralizing the error logging format.
+    
+    Args:
+        title (str): Error title to display.
+        message (str): Detailed error message.
+    """
+    logger.error("")
+    logger.error("=" * 60)
+    logger.error(f"❌ {title}")
+    logger.error("=" * 60)
+    logger.error(message)
+    logger.error("")
+
+
 def load_config(config_path: str) -> Dict[str, Any]:
     """Load configuration from JSON file.
     
@@ -253,9 +271,9 @@ def main() -> None:
         logger.info("")
         
         # Step 5: Convert to ONNX (Optional - skipped for now due to complexity)
-        # ステップ5: ONNX変換（オプション - 複雑性のため現在はスキップ）
+        # ステップ5: ONNX変換(オプション - 複雑性のため現在はスキップ)
         logger.info("ステップ5: ONNX変換をスキップ...")
-        logger.info("  ℹ ONNX変換は別途実装が必要です")
+        logger.info("  ℹ️  ONNX変換は別途実装が必要です")
         logger.info("  現在はjoblib形式のモデルを使用してください")
         logger.info("")
         
@@ -313,21 +331,11 @@ def main() -> None:
         logger.info("")
         
     except FileNotFoundError as e:
-        logger.error("")
-        logger.error("=" * 60)
-        logger.error("❌ ファイルが見つかりません")
-        logger.error("=" * 60)
-        logger.error(str(e))
-        logger.error("")
+        log_error_section("ファイルが見つかりません", str(e))
         sys.exit(1)
         
     except ValueError as e:
-        logger.error("")
-        logger.error("=" * 60)
-        logger.error("❌ データ検証エラー")
-        logger.error("=" * 60)
-        logger.error(str(e))
-        logger.error("")
+        log_error_section("データ検証エラー", str(e))
         sys.exit(1)
         
     except Exception as e:
