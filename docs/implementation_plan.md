@@ -1,16 +1,14 @@
-# ディレクトリ構造修正実装計画
+# 一時ディレクトリ削除実装計画
 
 ## 概要
 
-このドキュメントは、models/とdata/配下の不正なファイル/ディレクトリ構造を修正する計画です。
+このドキュメントは、空の一時ディレクトリ `docs/instructions_tmp/` を削除する計画です。
 
-**注意**: 本PR (#27) は主に `models/` の修正を目的としますが、テストフィクスチャの整理のために `python-trainer/tests/fixtures/` と `.gitignore` の小さな変更も含まれます。`data/` ディレクトリは変更対象外です。
-
-**Issue**: #15 - models/とdata/のディレクトリ構造修正
-**ブランチ**: `fix/directory-structure-models-data`
+**Issue**: #16 - chore: remove empty temporary directory docs/instructions_tmp/
+**ブランチ**: `chore/remove-empty-temporary-directory`
 **作成日**: 2025-12-07
-**優先度**: High
-**見積時間**: 30分
+**優先度**: Low
+**見積時間**: 5分
 
 ---
 
@@ -18,236 +16,118 @@
 
 ### 現状の問題
 
-`models/archive`と`models/current`がテキストファイルとして存在しており、本来はディレクトリであるべき構造が破綻しています。
+`docs/instructions_tmp/` という空のディレクトリが残存しており、プロジェクト構造を不明瞭にしています。
 
 **現状**:
 ```bash
-$ file models/archive models/current
-models/archive: UTF-8 Unicode text
-models/current: UTF-8 Unicode text
+$ ls -la docs/instructions_tmp/
+total 8
+drwxr-xr-x 2 nakagawa6 nakagawa6 4096 Dec  7 00:59 .
+drwxr-xr-x 3 nakagawa6 nakagawa6 4096 Dec  7 18:30 ..
 ```
 
-これにより以下の問題が発生:
+完全に空のディレクトリです。
 
-1. **モデル保存不可**: 訓練パイプラインがモデルを保存できない
-2. **Java統合テスト不可**: InferenceServiceがモデルをロードできない
-3. **すべての実装をブロック**: Issue #10, #12, #24等が影響を受ける
+### プロジェクト構造保護ガイドラインとの関連
 
-**data/配下の状況**:
-- `data/input`: 既にディレクトリとして正常（このPRでは変更なし）
-- `data/output`: 既にディレクトリとして正常（このPRでは変更なし）
+`.github/instructions/ai-project-structure-core.instructions.md` では以下のように禁止されています:
 
-### システム全体への影響
+```
+❌ 絶対禁止
+temp/, tmp/, test_folder/, experiment/, sandbox/
+```
 
-- **訓練パイプライン**: `ModelTrainer.run()`がモデルを保存できない
-- **Java統合テスト**: `InferenceService`がONNXモデルをロードできない
-- **Issue #12, #24**: 統合テストが実施不可能
+`instructions_tmp/` は `_tmp` という名前から一時的な作業用ディレクトリと推測され、このガイドラインに違反しています。
 
 ---
 
 ## 目的
 
-ディレクトリ構造を正常化し、以下を実現:
+空の一時ディレクトリを削除し、プロジェクト構造を明確化:
 
-1. **models/archive**: ディレクトリとして作成、`.gitkeep`で空ディレクトリを管理
-2. **models/current**: ディレクトリとして作成、`.gitkeep`で空ディレクトリを管理
-3. **Git履歴保持**: `git rm` + `git add`で正しく管理
-4. **構造検証**: 変更後にディレクトリが正しく作成されているか確認
+1. **docs/instructions_tmp/**: 削除
+2. **プロジェクト構造の一貫性**: ガイドライン準拠
+3. **クリーンアップ**: 不要なディレクトリの除去
 
 ---
 
 ## 影響を受けるファイルとディレクトリ
 
-### 修正対象
+### 削除対象
 
-| パス | 現状 | 修正後 |
-|------|------|--------|
-| `models/archive` | ファイル（UTF-8テキスト） | ディレクトリ + `.gitkeep` |
-| `models/current` | ファイル（UTF-8テキスト） | ディレクトリ + `.gitkeep` |
-
-**このPRのスコープ外（変更なし）**:
-
-| パス | 現状 | 備考 |
+| パス | 現状 | 理由 |
 |------|------|------|
-| `data/input` | ✅ ディレクトリ（正常） | Issue #15の計画に含まれるが、既に正常なため修正不要 |
-| `data/output` | ✅ ディレクトリ（正常） | Issue #15の計画に含まれるが、既に正常なため修正不要 |
+| `docs/instructions_tmp/` | 空ディレクトリ | 一時ディレクトリとして不適切、ガイドライン違反 |
 
-### このPRで追加で整理した項目（ドキュメント/テスト整理）
+### 影響範囲
 
-| パス | 変更内容 | 備考 |
-|------|---------|------|
-| `python-trainer/tests/fixtures/models/` | テスト用モデルフィクスチャを配置（`model.joblib` を移動） | 大容量の `.joblib` は `.gitignore`で除外し追跡しない |
-| `python-trainer/tests/fixtures/reports/` | テスト用レポートを配置（`training_summary.json` を移動・コミット） | テスト再現性向上のため JSON は追跡 |
-| `.gitignore` | `python-trainer/tests/fixtures/models/*.joblib` を追加 | 大きなバイナリを追跡しないため |
-
-### 既存ファイルの内容確認
-
-修正前に既存ファイルの内容を記録:
-
-**models/archive** (211 bytes):
-```
-# Archive Directory
-
-This directory contains archived machine learning models.
-Models are automatically moved here when a new model is deployed.
-
-Naming convention: model_YYYYMMDD_HHMMSS.onnx
-```
-
-**models/current** (340 bytes):
-```
-# Current Model Directory
-
-This directory contains the currently active machine learning model.
-The Java application loads the model from this location.
-
-Expected files:
-- model.onnx: Current ONNX model
-- model.joblib: Scikit-learn pipeline (for Python inference)
-- metadata.json: Model version and training information
-```
-
-→ これらの説明を`models/README.md`に統合済み
+**影響なし**: このディレクトリは完全に空であり、Git追跡もされていないため、削除による影響はありません。
 
 ---
 
 ## 実装タスク
 
-### Task 1: 既存ファイルの削除 (5分)
+### Task 1: 一時ディレクトリの削除 (2分)
 
-**目的**: テキストファイルとして存在する`models/archive`と`models/current`を削除
-
-**実装コマンド**:
-```bash
-git rm models/archive models/current
-```
-
-**検証方法**:
-- `git status`で削除がステージングされていることを確認
-- ファイルが物理的に削除されていることを確認
-
----
-
-### Task 2: ディレクトリの作成と.gitkeep追加 (5分)
-
-**目的**: `models/archive`と`models/current`をディレクトリとして作成し、空ディレクトリ管理用の`.gitkeep`を追加
+**目的**: 空の一時ディレクトリ `docs/instructions_tmp/` を削除
 
 **実装コマンド**:
 ```bash
-# ディレクトリ作成
-mkdir -p models/archive models/current
-
-# .gitkeep作成
-touch models/archive/.gitkeep
-touch models/current/.gitkeep
-
-# Gitに追加
-git add models/archive/.gitkeep models/current/.gitkeep
+# ディレクトリ削除（Git追跡されていないため rm -rf を使用）
+rm -rf docs/instructions_tmp/
 ```
 
 **検証方法**:
-- `models/archive`がディレクトリとして存在
-- `models/current`がディレクトリとして存在
-- 各ディレクトリ内に`.gitkeep`が存在
-- `git status`で追加がステージングされていることを確認
+- `ls -la docs/` で `instructions_tmp/` が存在しないことを確認
 
 ---
 
-### Task 3: 構造検証とドキュメント作成 (5分)
+### Task 2: implementation_plan.md の更新 (2分)
 
-**目的**: 変更が正しく適用されているか確認し、models/README.mdを作成
+**目的**: このドキュメントをIssue #16の内容に更新
 
 **実装内容**:
-
-1. 構造確認:
-   ```bash
-   # ディレクトリ構造の確認
-   file models/archive models/current
-   
-   # ツリー表示
-   tree models/
-   ```
-
-2. models/README.md作成:
-   - 削除した2つのファイルの内容を統合
-   - archive/とcurrent/の役割を説明
-   - 命名規則とバージョニングポリシーを記載
-   - **注記**: `models/test/` はリポジトリ内に残すべきではないため削除し、テストフィクスチャは `python-trainer/tests/fixtures/` に移動済みであることを明記
+- Issue #16に対応した内容に書き換え
+- 背景、目的、タスクを適切に記載
 
 **検証方法**:
-- `file models/archive`が`directory`を返す
-- `file models/current`が`directory`を返す
-- `ls -la models/archive/`で`.gitkeep`のみが存在
-- `ls -la models/current/`で`.gitkeep`のみが存在
+- ドキュメントがIssue #16の内容と一致していることを確認
 
 ---
 
-### Task 4: コミットとプッシュ (5分)
+### Task 3: コミットとプッシュ (1分)
 
 **目的**: 変更をコミットし、リモートブランチにプッシュ
 
 **実装コマンド**:
 ```bash
-# コミット（複数行メッセージはエディタ使用を推奨）
-# git commit を実行してエディタで以下のメッセージを入力:
-git commit
+# 変更をステージング（implementation_plan.mdの変更のみ）
+git add docs/implementation_plan.md
 
-# メッセージ内容:
-# fix: convert models/archive and models/current from files to directories
-# 
-# - Remove text files that were incorrectly used as directories
-# - Create proper directory structure with .gitkeep files
-# - This fixes model save/load functionality in training pipeline
-# - This unblocks Java-Python integration testing (Issue #12)
-# 
-# Closes #15
+# コミット
+git commit -m "chore: remove empty temporary directory
+
+- Remove docs/instructions_tmp/ (empty directory)
+- Update implementation_plan.md for Issue #16
+- Comply with project structure guidelines
+
+Closes #16"
 
 # プッシュ
-git push -u origin fix/directory-structure-models-data
+git push -u origin chore/remove-empty-temporary-directory
 ```
-
-**Note**: 複数行のコミットメッセージは `git commit` でエディタを開いて入力することを推奨します。
-Bash で直接入力する場合は改行を含む文字列として記述してください。
 
 **検証方法**:
 - コミットが正常に作成される
 - リモートブランチにプッシュされる
-- GitHub上でPR作成準備が整う
-
-### Task 5: PR作成 (10分)
-
-**目的**: GitHubでPRを作成し、レビュー依頼
-
-**実装コマンド**:
-```bash
-gh pr create \
-   --title "fix: convert models/archive and models/current to directories" \
-   --body-file .github/pull_request_template.md \
-   --base main
-```
-
-**PR本文のポイント**:
-- 変更概要: ファイル→ディレクトリへの変換
-- 変更理由: モデル保存機能の有効化
-- 影響範囲: models/配下のみ、data/は変更なし
-- テスト: 構造検証完了
-- リスク: なし（既存機能への影響なし）
-
-**検証方法**:
-- PRが正常に作成される
-- Issue #15が自動でリンクされる
-- CI/CDが正常に実行される
 
 ## タスク進捗トラッキング
 
 | Task | 内容 | 見積 | 状態 | 備考 |
 |------|------|------|------|------|
-| T-001 | 既存ファイルの削除 | 5分 | ✅ Done | git rm で削除完了 |
-| T-002 | ディレクトリ作成と.gitkeep追加 | 5分 | ✅ Done | mkdir, touch, git add で完了（.gitkeepは-f不要） |
-| T-003 | 構造検証とドキュメント作成 | 5分 | ✅ Done | 構造確認とREADME.md作成完了 |
-| T-004 | コミットとプッシュ | 5分 | ✅ Done | 3コミット、プッシュ完了 |
-| T-005 | PR作成 | 10分 | ✅ Done | PR #27 作成・本文更新完了 |
-| T-006 | テストフィクスチャ整理 | 5分 | ✅ Done | `models/test/` を `python-trainer/tests/fixtures/` に移動（JSONは追跡、.joblibは除外） |
+| T-001 | 一時ディレクトリの削除 | 2分 | ✅ Done | rm -rf で削除完了 |
+| T-002 | implementation_plan.md更新 | 2分 | ✅ Done | Issue #16対応に書き換え |
+| T-003 | コミットとプッシュ | 1分 | 🔵 In Progress | 次のステップ |
 
 **状態凡例**:
 - ⚪ Not Started（未着手）
@@ -260,26 +140,21 @@ gh pr create \
 
 | フェーズ | 見積時間 |
 |---------|---------|
-| Task 1: 既存ファイル削除 | 5分 |
-| Task 2: ディレクトリ作成 | 5分 |
-| Task 3: 構造検証 | 5分 |
-| Task 4: コミット・プッシュ | 5分 |
-| Task 5: PR作成 | 10分 |
-| **合計** | **30分** |
+| Task 1: 一時ディレクトリ削除 | 2分 |
+| Task 2: ドキュメント更新 | 2分 |
+| Task 3: コミット・プッシュ | 1分 |
+| **合計** | **5分** |
 
 ## 次のステップ
 
-実装計画に従い、以下の順序でタスクを実施（すべて完了済み）:
+実装計画に従い、以下の順序でタスクを実施:
 
-1. ✅ Task 1: 既存ファイルの削除
-2. ✅ Task 2: ディレクトリ作成と.gitkeep追加
-3. ✅ Task 3: 構造検証
-4. ✅ Task 4: コミットとプッシュ
-5. ✅ Task 5: PR作成
-6. ✅ Task 6: テストフィクスチャの移動と `.gitignore` 更新
+1. ✅ Task 1: 一時ディレクトリの削除
+2. ✅ Task 2: implementation_plan.md更新
+3. 🔵 Task 3: コミットとプッシュ
 
 ## 参考資料
 
-- [Issue #15](https://github.com/nakagawah13/factory-ml-offline-system/issues/15)
+- [Issue #16](https://github.com/nakagawah13/factory-ml-offline-system/issues/16)
 - [ai-project-structure-core.instructions.md](../.github/instructions/ai-project-structure-core.instructions.md)
 - [git-workflow.instructions.md](../.github/instructions/git-workflow.instructions.md)
