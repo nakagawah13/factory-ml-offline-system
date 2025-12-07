@@ -15,9 +15,9 @@
 
 - **ハードウェア:** Intel Core i7/i5 (12th Gen), 16GB RAM, Windows OS
 - **GUIアプリ (Main):**
-  - Language: Java 17+
+  - Language: Java 11+
   - Library: Microsoft ONNX Runtime (Java API)
-  - Framework: JavaFX (推奨) または Swing
+  - Framework: JavaFX 11 (推奨) または Swing
   - JSON Lib: Jackson or Gson
   - Components: WebView (HTMLレポート表示用), Charts
 - **学習ツール (Sub):**

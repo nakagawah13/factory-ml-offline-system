@@ -1,8 +1,9 @@
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 import com.factory.ml.service.InferenceService;
 import com.factory.ml.model.InferenceResult;
+import java.nio.FloatBuffer;
 
 /**
  * Unit tests for InferenceService.
@@ -21,9 +22,9 @@ public class InferenceServiceTest {
      * 
      * Initializes a new InferenceService instance.
      */
-    @BeforeEach
-    public void setUp() {
-        inferenceService = new InferenceService();
+    @Before
+    public void setUp() throws ai.onnxruntime.OrtException {
+        inferenceService = new InferenceService("models/current/model.onnx");
     }
 
     /**
@@ -33,8 +34,8 @@ public class InferenceServiceTest {
      * probability scores.
      */
     @Test
-    public void testPredictValidInput() {
-        float[] floatInput = {1.0f, 2.0f, 3.0f}; // Example numerical features
+    public void testPredictValidInput() throws ai.onnxruntime.OrtException {
+        FloatBuffer floatInput = FloatBuffer.wrap(new float[]{1.0f, 2.0f, 3.0f}); // Example numerical features
         String[] stringInput = {"A", "B"}; // Example categorical features
 
         InferenceResult result = inferenceService.predict(floatInput, stringInput, false);
@@ -52,8 +53,8 @@ public class InferenceServiceTest {
      * are handled correctly by the gray zone logic.
      */
     @Test
-    public void testPredictWithGrayZone() {
-        float[] floatInput = {0.5f, 0.5f, 0.5f}; // Example input that may fall into gray zone
+    public void testPredictWithGrayZone() throws ai.onnxruntime.OrtException {
+        FloatBuffer floatInput = FloatBuffer.wrap(new float[]{0.5f, 0.5f, 0.5f}); // Example input that may fall into gray zone
         String[] stringInput = {"C", "D"};
 
         InferenceResult result = inferenceService.predict(floatInput, stringInput, false);
@@ -69,8 +70,8 @@ public class InferenceServiceTest {
      * the primary model without affecting results.
      */
     @Test
-    public void testPredictWithShadowTest() {
-        float[] floatInput = {1.0f, 1.0f, 1.0f}; // Example input for shadow test
+    public void testPredictWithShadowTest() throws ai.onnxruntime.OrtException {
+        FloatBuffer floatInput = FloatBuffer.wrap(new float[]{1.0f, 1.0f, 1.0f}); // Example input for shadow test
         String[] stringInput = {"A", "B"};
 
         InferenceResult result = inferenceService.predict(floatInput, stringInput, true);

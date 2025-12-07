@@ -1,6 +1,9 @@
 package com.factory.ml.model;
 
-import java.util.HashMap;
+import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -9,6 +12,9 @@ import java.util.Map;
  * Stores feature values as key-value pairs where keys are feature names
  * and values are the corresponding feature values. Supports various data
  * types for feature values.
+ * 
+ * Uses LinkedHashMap to maintain insertion order, ensuring consistent
+ * feature ordering for ONNX model input.
  * 
  * @see FeatureTransformer
  * @see InferenceService
@@ -19,10 +25,24 @@ public class InputRow {
     /**
      * Constructs an empty InputRow.
      * 
-     * Initializes the features map to store feature name-value pairs.
+     * Initializes the features map with LinkedHashMap to preserve
+     * insertion order for consistent feature extraction.
      */
     public InputRow() {
-        features = new HashMap<>();
+        features = new LinkedHashMap<>();
+    }
+
+    /**
+     * Constructs an InputRow as a copy of another InputRow.
+     * 
+     * Creates a deep copy of the features map from the provided InputRow.
+     * Used for simulation scenarios where modifications are needed without
+     * affecting the original data. Preserves insertion order.
+     * 
+     * @param other The InputRow to copy from
+     */
+    public InputRow(InputRow other) {
+        this.features = new LinkedHashMap<>(other.features);
     }
 
     /**
@@ -33,6 +53,18 @@ public class InputRow {
      */
     public void setFeature(String key, Object value) {
         features.put(key, value);
+    }
+
+    /**
+     * Sets a value for a specific column.
+     * 
+     * Alias for setFeature() to provide alternative naming convention.
+     * 
+     * @param column Column name
+     * @param value Value to set
+     */
+    public void setValue(String column, Object value) {
+        features.put(column, value);
     }
 
     /**
@@ -52,5 +84,55 @@ public class InputRow {
      */
     public Map<String, Object> getFeatures() {
         return features;
+    }
+
+    /**
+     * Extracts float input values from features.
+     * 
+     * Iterates through all features and extracts numeric values, converting
+     * them to float type. Returns a FloatBuffer suitable for ONNX model input.
+     * 
+     * <p><b>Important:</b> This method relies on LinkedHashMap's insertion order
+     * to maintain feature ordering. Features must be inserted in the exact order
+     * expected by the ONNX model. Consider using explicit feature name ordering
+     * or validation in production code to ensure correctness.</p>
+     * 
+     * <p>Current implementation extracts all numeric features in insertion order.
+     * If feature ordering is critical for model inference, callers should ensure
+     * features are added to InputRow in the correct sequence.</p>
+     * 
+     * @return FloatBuffer containing all numeric feature values in insertion order
+     */
+    public FloatBuffer getFloatInput() {
+        List<Float> floatValues = new ArrayList<>();
+        for (Object value : features.values()) {
+            if (value instanceof Number) {
+                floatValues.add(((Number) value).floatValue());
+            }
+        }
+        FloatBuffer buffer = FloatBuffer.allocate(floatValues.size());
+        for (Float f : floatValues) {
+            buffer.put(f);
+        }
+        buffer.flip();
+        return buffer;
+    }
+
+    /**
+     * Extracts string input values from features.
+     * 
+     * Iterates through all features and extracts string values, returning
+     * them as a String array suitable for ONNX model input.
+     * 
+     * @return String array containing all string feature values
+     */
+    public String[] getStringInput() {
+        List<String> stringValues = new ArrayList<>();
+        for (Object value : features.values()) {
+            if (value instanceof String) {
+                stringValues.add((String) value);
+            }
+        }
+        return stringValues.toArray(new String[0]);
     }
 }

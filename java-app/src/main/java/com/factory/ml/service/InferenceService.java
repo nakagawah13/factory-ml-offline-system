@@ -7,6 +7,8 @@ import com.factory.ml.util.ProcessExecutor;
 
 import java.nio.FloatBuffer;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * ONNX model inference service.
@@ -65,18 +67,66 @@ public class InferenceService {
     public InferenceResult predict(FloatBuffer floats, String[] strings, boolean useCandidate) throws OrtException {
         OrtSession session = useCandidate ? candidateSession : currentSession;
 
-        OrtTensor floatTensor = OrtTensor.createTensor(env, floats, new long[]{1, floats.remaining()});
-        OrtTensor stringTensor = OrtTensor.createTensor(env, strings, new long[]{1, strings.length});
+        // Convert FloatBuffer to float array for ONNX tensor creation
+        // Note: This involves FloatBuffer → float[] → FloatBuffer conversion.
+        // The intermediate array is required because OnnxTensor.createTensor()
+        // needs explicit shape specification (new long[]{1, length}).
+        // Direct FloatBuffer pass-through is not supported by ONNX Runtime API.
+        float[] floatArray = new float[floats.remaining()];
+        floats.get(floatArray);
+        floats.rewind();
 
-        OrtInputs inputs = new OrtInputs();
-        inputs.add("float_input", floatTensor);
-        inputs.add("string_input", stringTensor);
+        // Create tensors using ONNX Runtime 1.15.0 API
+        // Use try-with-resources to ensure tensors and result are properly closed
+        // even if an exception occurs during inference
+        try (OnnxTensor floatTensor = OnnxTensor.createTensor(env, FloatBuffer.wrap(floatArray), new long[]{1, floatArray.length});
+             OnnxTensor stringTensor = OnnxTensor.createTensor(env, strings)) {
 
-        OrtOutputs outputs = session.run(inputs);
-        float[] probabilities = (float[]) outputs.get("probabilities").getValue();
-        String label = (String) outputs.get("label").getValue();
+            // Create input map
+            Map<String, OnnxTensor> inputs = new HashMap<>();
+            inputs.put("float_input", floatTensor);
+            inputs.put("string_input", stringTensor);
 
-        return new InferenceResult(label, probabilities);
+            // Run inference
+            try (OrtSession.Result result = session.run(inputs)) {
+                // Extract results with type conversion
+                OnnxValue probValue = result.get("probabilities").get();
+                double[] probabilities = convertToDoubleArray(probValue);
+
+                OnnxValue labelValue = result.get("label").get();
+                String label = (String) labelValue.getValue();
+
+                return new InferenceResult(label, probabilities);
+            }
+        }
+    }
+
+    /**
+     * Converts an ONNX value containing a float[] or double[] to a double array.
+     * 
+     * This method extracts the numeric array from the ONNX value and ensures the result is always a double[].
+     * If the ONNX model outputs a float[] (common for float32 models), it is converted to double[].
+     * If the ONNX model outputs a double[] (less common), it is returned as-is.
+     * This ensures consistent downstream processing with double[] arrays.
+     * 
+     * @param value ONNX value to convert (must contain double[] or float[])
+     * @return Double array representation of the ONNX value
+     * @throws OrtException if value extraction fails
+     * @throws IllegalStateException if value is neither double[] nor float[]
+     */
+    private double[] convertToDoubleArray(OnnxValue value) throws OrtException {
+        Object obj = value.getValue();
+        if (obj instanceof double[]) {
+            return (double[]) obj;
+        } else if (obj instanceof float[]) {
+            float[] floats = (float[]) obj;
+            double[] doubles = new double[floats.length];
+            for (int i = 0; i < floats.length; i++) {
+                doubles[i] = floats[i];
+            }
+            return doubles;
+        }
+        throw new IllegalStateException("Unexpected probability type: " + obj.getClass());
     }
 
     /**
@@ -100,8 +150,10 @@ public class InferenceService {
      * 
      * Releases resources held by current and candidate model sessions.
      * Should be called when the service is no longer needed.
+     * 
+     * @throws OrtException if resource cleanup fails
      */
-    public void close() {
+    public void close() throws OrtException {
         if (currentSession != null) {
             currentSession.close();
         }

@@ -11,8 +11,8 @@
 
 ## 技術スタック
 - **Javaアプリケーション**
-  - Java 17+
-  - JavaFX
+  - Java 11+
+  - JavaFX 11
   - ONNX Runtime (Java API)
 - **Pythonトレーナー**
   - Python 3.10+
