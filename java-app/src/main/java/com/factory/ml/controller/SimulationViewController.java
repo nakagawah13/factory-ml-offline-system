@@ -1,5 +1,8 @@
 package com.factory.ml.controller;
 
+import ai.onnxruntime.OrtException;
+import com.factory.ml.model.InferenceResult;
+import com.factory.ml.service.InferenceService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
@@ -42,7 +45,11 @@ public class SimulationViewController {
      * Initializes the inference service for running simulations.
      */
     public SimulationViewController() {
-        this.inferenceService = new InferenceService();
+        try {
+            this.inferenceService = new InferenceService("models/current/model.onnx");
+        } catch (OrtException e) {
+            throw new RuntimeException("Failed to initialize InferenceService", e);
+        }
     }
 
     /**
@@ -68,9 +75,21 @@ public class SimulationViewController {
      */
     private void runSimulation() {
         double modifiedValue = valueSlider.getValue();
-        // Call the inference service with the modified value
-        InferenceResult result = inferenceService.simulate(modifiedValue);
-        updateChart(result);
+        // TODO: Implement proper simulation logic with SimulationService
+        // For now, create a simple demo prediction
+        try {
+            // Create dummy input for demonstration
+            java.nio.FloatBuffer floatInput = java.nio.FloatBuffer.allocate(1);
+            floatInput.put((float) modifiedValue);
+            floatInput.flip();
+            
+            String[] stringInput = new String[0];
+            
+            InferenceResult result = inferenceService.predict(floatInput, stringInput, false);
+            updateChart(result);
+        } catch (OrtException e) {
+            System.err.println("Simulation failed: " + e.getMessage());
+        }
     }
 
     /**

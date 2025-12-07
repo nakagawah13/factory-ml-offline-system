@@ -1,9 +1,11 @@
 package com.factory.ml.controller;
 
+import ai.onnxruntime.OrtException;
 import com.factory.ml.service.DataValidator;
 import com.factory.ml.service.ModelManagerService;
 import com.factory.ml.service.FeatureTransformer;
 import com.factory.ml.service.InferenceService;
+import com.factory.ml.model.Schema;
 import com.factory.ml.model.ValidationError;
 import com.factory.ml.model.InputRow;
 import javafx.fxml.FXML;
@@ -13,7 +15,11 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,8 +70,12 @@ public class TrainingTabController {
     public TrainingTabController() {
         this.dataValidator = new DataValidator();
         this.featureTransformer = new FeatureTransformer();
-        this.inferenceService = new InferenceService();
-        this.modelManagerService = new ModelManagerService();
+        try {
+            this.inferenceService = new InferenceService("models/current/model.onnx");
+        } catch (OrtException e) {
+            throw new RuntimeException("Failed to initialize InferenceService", e);
+        }
+        this.modelManagerService = new ModelManagerService("models/current", "models/archive");
     }
 
     /**
@@ -103,10 +113,17 @@ public class TrainingTabController {
      */
     private void validateTrainingData() {
         String filePath = trainingDataPathField.getText();
-        List<ValidationError> errors = dataValidator.validate(filePath);
-        validationErrorsListView.getItems().clear();
-        validationErrorsListView.getItems().addAll(errors);
-        statusLabel.setText(errors.isEmpty() ? "Validation successful!" : "Validation failed with errors.");
+        try {
+            List<String[]> csvRows = loadCsvRows(filePath);
+            // TODO: Implement proper schema loading from config/schema.json
+            Schema schema = new Schema("1.0", new ArrayList<>());
+            List<ValidationError> errors = dataValidator.validate(csvRows, schema);
+            validationErrorsListView.getItems().clear();
+            validationErrorsListView.getItems().addAll(errors);
+            statusLabel.setText(errors.isEmpty() ? "Validation successful!" : "Validation failed with errors.");
+        } catch (IOException e) {
+            statusLabel.setText("Error loading file: " + e.getMessage());
+        }
     }
 
     /**
@@ -117,12 +134,39 @@ public class TrainingTabController {
      */
     private void startTraining() {
         String filePath = trainingDataPathField.getText();
-        if (dataValidator.validate(filePath).isEmpty()) {
-            // Proceed with training logic
-            modelManagerService.trainModel(filePath);
-            statusLabel.setText("Training completed successfully.");
-        } else {
-            statusLabel.setText("Please fix validation errors before training.");
+        try {
+            List<String[]> csvRows = loadCsvRows(filePath);
+            // TODO: Implement proper schema loading from config/schema.json
+            Schema schema = new Schema("1.0", new ArrayList<>());
+            List<ValidationError> errors = dataValidator.validate(csvRows, schema);
+            
+            if (errors.isEmpty()) {
+                // Proceed with training logic
+                // TODO: trainModel() method needs implementation or alternative approach
+                statusLabel.setText("Training initiated. Check Python trainer for progress.");
+            } else {
+                statusLabel.setText("Please fix validation errors before training.");
+            }
+        } catch (IOException e) {
+            statusLabel.setText("Error loading file: " + e.getMessage());
         }
+    }
+
+    /**
+     * Loads CSV rows from a file.
+     * 
+     * @param filePath Path to the CSV file
+     * @return List of String arrays, each representing a CSV row
+     * @throws IOException if file reading fails
+     */
+    private List<String[]> loadCsvRows(String filePath) throws IOException {
+        List<String[]> rows = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                rows.add(line.split(","));
+            }
+        }
+        return rows;
     }
 }

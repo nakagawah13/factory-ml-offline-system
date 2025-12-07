@@ -1,5 +1,6 @@
 package com.factory.ml.service;
 
+import ai.onnxruntime.OrtException;
 import com.factory.ml.model.InputRow;
 import com.factory.ml.model.InferenceResult;
 
@@ -30,6 +31,7 @@ public class SimulationService {
      * @param original Original input row
      * @param modifications Map of feature names to modified values
      * @return Inference result with the modified input
+     * @throws RuntimeException if inference fails
      */
     public InferenceResult simulate(InputRow original, Map<String, Object> modifications) {
         // Create a copy of the original input row
@@ -43,7 +45,18 @@ public class SimulationService {
         }
         
         // Perform inference using the modified row
-        InferenceService inferenceService = new InferenceService();
-        return inferenceService.predict(modifiedRow.getFloatInput(), modifiedRow.getStringInput(), false);
+        // TODO: Model path should be configurable or injected via constructor
+        try {
+            InferenceService inferenceService = new InferenceService("models/current/model.onnx");
+            InferenceResult result = inferenceService.predict(
+                modifiedRow.getFloatInput(), 
+                modifiedRow.getStringInput(), 
+                false
+            );
+            inferenceService.close();
+            return result;
+        } catch (OrtException e) {
+            throw new RuntimeException("Simulation inference failed: " + e.getMessage(), e);
+        }
     }
 }

@@ -1,6 +1,9 @@
 package com.factory.ml.model;
 
+import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,6 +29,19 @@ public class InputRow {
     }
 
     /**
+     * Constructs an InputRow as a copy of another InputRow.
+     * 
+     * Creates a deep copy of the features map from the provided InputRow.
+     * Used for simulation scenarios where modifications are needed without
+     * affecting the original data.
+     * 
+     * @param other The InputRow to copy from
+     */
+    public InputRow(InputRow other) {
+        this.features = new HashMap<>(other.features);
+    }
+
+    /**
      * Sets a feature value.
      * 
      * @param key Feature name
@@ -33,6 +49,18 @@ public class InputRow {
      */
     public void setFeature(String key, Object value) {
         features.put(key, value);
+    }
+
+    /**
+     * Sets a value for a specific column.
+     * 
+     * Alias for setFeature() to provide alternative naming convention.
+     * 
+     * @param column Column name
+     * @param value Value to set
+     */
+    public void setValue(String column, Object value) {
+        features.put(column, value);
     }
 
     /**
@@ -52,5 +80,46 @@ public class InputRow {
      */
     public Map<String, Object> getFeatures() {
         return features;
+    }
+
+    /**
+     * Extracts float input values from features.
+     * 
+     * Iterates through all features and extracts numeric values, converting
+     * them to float type. Returns a FloatBuffer suitable for ONNX model input.
+     * 
+     * @return FloatBuffer containing all numeric feature values
+     */
+    public FloatBuffer getFloatInput() {
+        List<Float> floatValues = new ArrayList<>();
+        for (Object value : features.values()) {
+            if (value instanceof Number) {
+                floatValues.add(((Number) value).floatValue());
+            }
+        }
+        FloatBuffer buffer = FloatBuffer.allocate(floatValues.size());
+        for (Float f : floatValues) {
+            buffer.put(f);
+        }
+        buffer.flip();
+        return buffer;
+    }
+
+    /**
+     * Extracts string input values from features.
+     * 
+     * Iterates through all features and extracts string values, returning
+     * them as a String array suitable for ONNX model input.
+     * 
+     * @return String array containing all string feature values
+     */
+    public String[] getStringInput() {
+        List<String> stringValues = new ArrayList<>();
+        for (Object value : features.values()) {
+            if (value instanceof String) {
+                stringValues.add((String) value);
+            }
+        }
+        return stringValues.toArray(new String[0]);
     }
 }
