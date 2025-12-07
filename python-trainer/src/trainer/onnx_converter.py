@@ -135,7 +135,9 @@ def save_onnx_model(model: Any, output_dir: str, model_name: str) -> str:
         else:
             raise AttributeError(
                 "Model lacks 'n_features_in_' attribute. "
-                "Cannot determine input feature count for ONNX conversion."
+                "Cannot determine input feature count for ONNX conversion.\n"
+                "モデルに'n_features_in_'属性がありません。"
+                "ONNX変換用の入力特徴量数を決定できません。"
             )
     
     # ONNX変換用の入力型を定義（FloatTensorTypeのみ）

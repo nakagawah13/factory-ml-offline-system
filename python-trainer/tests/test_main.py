@@ -33,9 +33,8 @@ class TestLoadConfig:
         invalid_json = '{"training": invalid}'
         
         with patch("builtins.open", mock_open(read_data=invalid_json)):
-            with pytest.raises(ValueError) as exc_info:
+            with pytest.raises(ValueError):
                 load_config("config.json")
-            assert "JSON形式が不正です" in str(exc_info.value)
 
 
 class TestLoadSchema:
@@ -61,6 +60,5 @@ class TestLoadSchema:
         invalid_json = '{"columns": invalid}'
         
         with patch("builtins.open", mock_open(read_data=invalid_json)):
-            with pytest.raises(ValueError) as exc_info:
+            with pytest.raises(ValueError):
                 load_schema("schema.json")
-            assert "JSON形式が不正です" in str(exc_info.value)

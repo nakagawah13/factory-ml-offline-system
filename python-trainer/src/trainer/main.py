@@ -83,10 +83,10 @@ def load_config(config_path: str) -> Dict[str, Any]:
     try:
         with open(config_path, 'r', encoding='utf-8') as f:
             return json.load(f)
-    except FileNotFoundError:
-        raise FileNotFoundError(f"設定ファイルが見つかりません: {config_path}")
+    except FileNotFoundError as e:
+        raise FileNotFoundError(f"設定ファイルが見つかりません: {config_path}") from e
     except json.JSONDecodeError as e:
-        raise ValueError(f"設定ファイルのJSON形式が不正です: {config_path}\n詳細: {str(e)}")
+        raise ValueError(f"設定ファイルのJSON形式が不正です: {config_path}\n詳細: {str(e)}") from e
 
 
 def load_schema(schema_path: str) -> Dict[str, Any]:
@@ -109,10 +109,10 @@ def load_schema(schema_path: str) -> Dict[str, Any]:
     try:
         with open(schema_path, 'r', encoding='utf-8') as f:
             return json.load(f)
-    except FileNotFoundError:
-        raise FileNotFoundError(f"スキーマファイルが見つかりません: {schema_path}")
+    except FileNotFoundError as e:
+        raise FileNotFoundError(f"スキーマファイルが見つかりません: {schema_path}") from e
     except json.JSONDecodeError as e:
-        raise ValueError(f"スキーマファイルのJSON形式が不正です: {schema_path}\n詳細: {str(e)}")
+        raise ValueError(f"スキーマファイルのJSON形式が不正です: {schema_path}\n詳細: {str(e)}") from e
 
 
 def main() -> None:
