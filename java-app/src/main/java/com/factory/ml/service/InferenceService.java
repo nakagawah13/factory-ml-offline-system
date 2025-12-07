@@ -77,30 +77,28 @@ public class InferenceService {
         floats.rewind();
 
         // Create tensors using ONNX Runtime 1.15.0 API
-        OnnxTensor floatTensor = OnnxTensor.createTensor(env, FloatBuffer.wrap(floatArray), new long[]{1, floatArray.length});
-        OnnxTensor stringTensor = OnnxTensor.createTensor(env, strings);
+        // Use try-with-resources to ensure tensors and result are properly closed
+        // even if an exception occurs during inference
+        try (OnnxTensor floatTensor = OnnxTensor.createTensor(env, FloatBuffer.wrap(floatArray), new long[]{1, floatArray.length});
+             OnnxTensor stringTensor = OnnxTensor.createTensor(env, strings)) {
 
-        // Create input map
-        Map<String, OnnxTensor> inputs = new HashMap<>();
-        inputs.put("float_input", floatTensor);
-        inputs.put("string_input", stringTensor);
+            // Create input map
+            Map<String, OnnxTensor> inputs = new HashMap<>();
+            inputs.put("float_input", floatTensor);
+            inputs.put("string_input", stringTensor);
 
-        // Run inference
-        OrtSession.Result result = session.run(inputs);
+            // Run inference
+            try (OrtSession.Result result = session.run(inputs)) {
+                // Extract results with type conversion
+                OnnxValue probValue = result.get("probabilities").get();
+                double[] probabilities = convertToDoubleArray(probValue);
 
-        // Extract results with type conversion
-        OnnxValue probValue = result.get("probabilities").get();
-        double[] probabilities = convertToDoubleArray(probValue);
+                OnnxValue labelValue = result.get("label").get();
+                String label = (String) labelValue.getValue();
 
-        OnnxValue labelValue = result.get("label").get();
-        String label = (String) labelValue.getValue();
-
-        // Clean up resources
-        floatTensor.close();
-        stringTensor.close();
-        result.close();
-
-        return new InferenceResult(label, probabilities);
+                return new InferenceResult(label, probabilities);
+            }
+        }
     }
 
     /**
