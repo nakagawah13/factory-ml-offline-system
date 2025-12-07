@@ -102,17 +102,14 @@ public class InferenceService {
     }
 
     /**
-     * Converts ONNX value to double array.
+     * Converts an ONNX value containing a float[] or double[] to a double array.
      * 
-     * Handles type conversion from double[] or float[] to double[].
-     * ONNX Runtime may return different numeric types depending on the model.
+     * This method extracts the numeric array from the ONNX value and ensures the result is always a double[].
+     * If the ONNX model outputs a float[] (common for float32 models), it is converted to double[].
+     * If the ONNX model outputs a double[] (less common), it is returned as-is.
+     * This ensures consistent downstream processing with double[] arrays.
      * 
-     * CLARIFICATION: Despite the method name, this method handles BOTH float[] and double[].
-     * - If ONNX model outputs float[] (common for float32 models), converts to double[]
-     * - If ONNX model outputs double[] (less common), returns as-is
-     * - Always returns double[] for consistent downstream processing
-     * 
-     * @param value ONNX value to convert (must be double[] or float[])
+     * @param value ONNX value to convert (must contain double[] or float[])
      * @return Double array representation of the ONNX value
      * @throws OrtException if value extraction fails
      * @throws IllegalStateException if value is neither double[] nor float[]
