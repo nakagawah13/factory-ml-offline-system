@@ -1,14 +1,12 @@
 # 一時ディレクトリ削除実装計画
 
 ## 概要
-**見積時間**: 6分
 このドキュメントは、空の一時ディレクトリ `docs/instructions_tmp/` を削除する計画です。
 
 **Issue**: #16 - chore: remove empty temporary directory docs/instructions_tmp/
 **ブランチ**: `chore/remove-empty-temporary-directory`
 **作成日**: 2025-12-07
 **優先度**: Low
-**見積時間**: 6分
 
 ---
 
