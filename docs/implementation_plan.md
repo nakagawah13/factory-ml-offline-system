@@ -180,7 +180,7 @@ git commit -m "fix: convert models/archive and models/current from files to dire
 - This fixes model save/load functionality in training pipeline
 - This unblocks Java-Python integration testing (Issue #12)
 
-Resolves #15"
+Closes #15"
 
 # プッシュ
 git push -u origin fix/directory-structure-models-data
