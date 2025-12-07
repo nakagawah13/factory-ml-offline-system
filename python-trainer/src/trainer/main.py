@@ -259,11 +259,15 @@ def main() -> None:
         logger.info("  現在はjoblib形式のモデルを使用してください")
         logger.info("")
         
-        onnx_path = None  # ONNX conversion is not yet supported
+        # ONNX conversion is not yet supported - reserved for future implementation
+        # This variable is used in the final summary (line 308)
+        onnx_path = None
         
-        # TODO: Implement proper ONNX conversion with correct input column names
+        # TODO(Issue #23): Implement proper ONNX conversion with correct input column names
+        # Expected completion: 2025-Q1
         # The current challenge is matching the ColumnTransformer's expected
         # column names with the ONNX initial_types parameter
+        # Blockers: Column name matching between ColumnTransformer and skl2onnx
         # 
         # from trainer.onnx_converter import save_onnx_model
         # import joblib
