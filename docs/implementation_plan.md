@@ -1,117 +1,371 @@
-# コード品質向上実装計画
+# trainer/main.py 完全実装計画
 
 ## 概要
 
-このドキュメントは、既存コードベースに型ヒント、Docstring、ファイル冒頭コメントを追加し、コード品質を向上させるための実装計画です。
+このドキュメントは、python-trainer/src/trainer/main.pyのプレースホルダー実装を完全な訓練パイプラインに実装する計画です。
 
-**ブランチ**: `refactor/add-type-hints-and-docstrings`
+**Issue**: #8 - trainer/main.pyの実装が不完全でプレースホルダー状態
+**ブランチ**: `feat/implement-trainer-main-pipeline`
 **作成日**: 2025-12-07
-**完了日**: 2025-12-07
+**優先度**: Critical
+**見積時間**: 6時間
 
-### 📊 実装成果サマリー
+---
 
-**全5フェーズ完了 ✅**
+## 背景と問題
 
-| 項目 | 実績 |
-|------|------|
-| **対象ファイル数** | 30ファイル (Python: 10, Java: 20) |
-| **追加ドキュメント行数** | 約1,187行 |
-| **Python型ヒント** | 全関数・メソッドに追加 |
-| **Pythonモジュールdocstring** | 10ファイルに追加 |
-| **Javadoc** | 20クラス、全メソッドに追加 |
-| **作業時間** | 19時間（見積: 19時間） |
-| **コミット数** | 14コミット |
+### 現状の問題
+
+`python-trainer/src/trainer/main.py` は現在プレースホルダー状態で、以下が未実装:
+
+1. **設定・スキーマ読み込み**: JSON設定ファイルとスキーマ定義の読み込み処理
+2. **パイプライン実装**: 各コンポーネント（DataLoader, Preprocessor, ModelTrainer等）の連携
+3. **エラーハンドリング**: ファイル不在、検証エラー、訓練エラーの適切な処理
+4. **ロギング**: 各ステップの進捗状況を日本語で出力
+5. **統合**: ONNXモデル変換とレポート生成の統合
+
+### 現在の動作
+
+```bash
+$ uv run trainer --data data.csv --output models/ --config config.json
+Training pipeline started.
+Data: data.csv
+Output: models/
+Config: config.json
+Generate report: False
+Training pipeline completed (placeholder mode).
+```
+
+→ 何も学習しない（メッセージ表示のみ）
+
+### システム全体への影響
+
+- **モデル学習不可**: 実際の学習パイプラインが動作しない
+- **ONNXモデル生成不可**: 変換処理が未実装
+- **Java連携不可**: Javaから呼び出しても何も起こらない
 
 ---
 
 ## 目的
 
-以下のガイドラインに準拠したコード品質の向上:
-- [ai-code-writing.instructions.md](.github/instructions/ai-code-writing.instructions.md) - コード執筆ガイドライン
-- [ai-code-examples-reference.instructions.md](.github/instructions/ai-code-examples-reference.instructions.md) - コード例集
-- [ai-advanced-patterns.instructions.md](.github/instructions/ai-advanced-patterns.instructions.md) - 高度なパターン
+完全に機能する訓練パイプラインを実装し、以下を実現:
 
-### 主要な改善項目
-
-1. **型ヒント (Type Hints)**: すべての関数・メソッドの引数と戻り値に型アノテーションを追加
-2. **Google Style Docstring**: すべての公開クラス・関数にdocstringを追加
-3. **ファイル冒頭コメント**: すべてのPythonファイルにモジュールdocstringを追加
-4. **Javadoc**: すべてのJavaクラス・メソッドにJavadocを追加
+1. **設定ベースの訓練**: JSON設定ファイルとスキーマ定義に基づく訓練
+2. **エンドツーエンドパイプライン**: データ読み込み → 前処理 → 訓練 → ONNX変換 → レポート生成
+3. **堅牢なエラーハンドリング**: 明確なエラーメッセージと適切な例外処理
+4. **詳細なロギング**: 各ステップの進捗状況を日本語で出力
+5. **Java連携準備**: Javaアプリケーションから呼び出し可能な状態
 
 ---
 
-## 対象ファイル分析
+## 既存実装の分析
 
-### Pythonファイル (13ファイル、322行)
+### 利用可能なコンポーネント（Phase 1で実装済み）
 
-| ファイル | 行数 | 優先度 | 現状分析 |
-|---------|------|--------|---------|
-| `main.py` | 6 | High | 型ヒント・docstring・モジュールdocstring すべて欠落 |
-| `python-trainer/setup.py` | 23 | Low | セットアップスクリプト、最小限の対応 |
-| `python-trainer/src/trainer/__init__.py` | 0 | Low | 空ファイル |
-| `python-trainer/src/analysis/__init__.py` | 0 | Low | 空ファイル |
-| **`python-trainer/src/trainer/data_loader.py`** | 28 | **High** | 型ヒント・docstring・モジュールdocstring すべて欠落 |
-| **`python-trainer/src/trainer/model_trainer.py`** | 57 | **High** | 型ヒント・docstring・モジュールdocstring すべて欠落 |
-| **`python-trainer/src/trainer/preprocessor.py`** | 27 | **High** | 型ヒント・docstring・モジュールdocstring すべて欠落 |
-| `python-trainer/src/trainer/onnx_converter.py` | 22 | Medium | 型ヒント・docstring・モジュールdocstring すべて欠落 |
-| `python-trainer/src/trainer/report_generator.py` | 40 | Medium | 型ヒント・docstring・モジュールdocstring すべて欠落 |
-| `python-trainer/src/trainer/main.py` | 36 | Medium | 型ヒント・docstring・モジュールdocstring すべて欠落 |
-| **`python-trainer/src/analysis/drift_detector.py`** | 27 | **High** | 型ヒント・docstring・モジュールdocstring すべて欠落 |
-| `python-trainer/src/analysis/shap_analyzer.py` | 31 | Medium | 型ヒント・docstring・モジュールdocstring すべて欠落 |
-| `python-trainer/src/analysis/metrics_calculator.py` | 25 | Medium | 型ヒント・docstring・モジュールdocstring すべて欠落 |
+| コンポーネント | 状態 | 主要メソッド |
+|---------------|------|-------------|
+| **DataLoader** | ✅ 実装済み | `__init__(schema)`, `load_data(file_path)` |
+| **Preprocessor** | ✅ 実装済み | `__init__(schema)`, `fit(data)`, `transform(data)`, `fit_transform(data)` |
+| **ModelTrainer** | ✅ 実装済み | `__init__(config)`, `run(data_path, output_path)` |
+| **onnx_converter** | ✅ 実装済み | `save_onnx_model(model, output_dir, model_name)` |
+| **ReportGenerator** | ✅ 実装済み | `__init__(output_dir)`, `save_report(metrics, shap_values, features, drift)` |
 
-### Javaファイル (20ファイル、846行)
+### 設定ファイルの構造
 
-| ファイル | 行数 | 優先度 | 現状分析 |
-|---------|------|--------|---------|
-| `java-app/src/main/java/com/factory/ml/FactoryMLApp.java` | 21 | High | Javadoc・クラスコメント欠落 |
-| **`java-app/src/main/java/com/factory/ml/service/DataValidator.java`** | 21 | **High** | Javadoc・クラスコメント欠落 |
-| **`java-app/src/main/java/com/factory/ml/service/InferenceService.java`** | 53 | **High** | Javadoc・クラスコメント欠落 |
-| **`java-app/src/main/java/com/factory/ml/service/ModelManagerService.java`** | 44 | **High** | Javadoc・クラスコメント欠落 |
-| `java-app/src/main/java/com/factory/ml/service/FeatureTransformer.java` | 20 | Medium | Javadoc・クラスコメント欠落 |
-| `java-app/src/main/java/com/factory/ml/service/SimulationService.java` | 24 | Medium | Javadoc・クラスコメント欠落 |
-| `java-app/src/main/java/com/factory/ml/model/Schema.java` | 117 | High | Javadoc・クラスコメント欠落 |
-| `java-app/src/main/java/com/factory/ml/model/InferenceResult.java` | 28 | Medium | Javadoc・クラスコメント欠落 |
-| `java-app/src/main/java/com/factory/ml/model/InputRow.java` | 23 | Medium | Javadoc・クラスコメント欠落 |
-| `java-app/src/main/java/com/factory/ml/model/ValidationError.java` | 31 | Medium | Javadoc・クラスコメント欠落 |
-| **`java-app/src/main/java/com/factory/ml/util/ConfigLoader.java`** | 34 | **High** | Javadoc・クラスコメント欠落 |
-| `java-app/src/main/java/com/factory/ml/util/DateParser.java` | 20 | Medium | Javadoc・クラスコメント欠落 |
-| `java-app/src/main/java/com/factory/ml/util/ProcessExecutor.java` | 28 | Medium | Javadoc・クラスコメント欠落 |
-| `java-app/src/main/java/com/factory/ml/controller/*` | 240 | Low | UIコントローラ、後回し可 |
-| `java-app/src/test/java/com/factory/ml/*Test.java` | 142 | Low | テストコード、後回し可 |
+**config/schema.json**:
+```json
+{
+  "version": "1.0",
+  "columns": [
+    {
+      "name": "timestamp",
+      "type": "DATE",
+      "format": "yyyy-MM-dd",
+      "required": true
+    },
+    {
+      "name": "product_type",
+      "type": "CATEGORY",
+      "allowed_values": ["A", "B", "C"],
+      "required": true
+    },
+    {
+      "name": "sensor_val_1",
+      "type": "NUMERIC",
+      "min": 0.0,
+      "max": 1000.0
+    }
+  ]
+}
+```
+
+**config/app_settings.json**:
+```json
+{
+  "current_model_path": "models/current/model.onnx",
+  "gray_zone_threshold": {
+    "min": 0.4,
+    "max": 0.6
+  },
+  "report_generation": {
+    "enabled": true,
+    "output_format": "html"
+  }
+}
+```
+
+### 必要な設定項目（新規追加）
+
+trainer/main.pyで必要となる設定を`config/app_settings.json`に追加:
+
+```json
+{
+  "training": {
+    "numerical_features": ["sensor_val_1", "sensor_val_2", "..."],
+    "categorical_features": ["product_type"],
+    "target": "defect_flag",
+    "test_size": 0.2,
+    "random_state": 42
+  }
+}
+```
 
 ---
 
-## 実装フェーズ
+## 対象ファイル
 
-### Phase 1: Python Core Modules (最優先)
+### 実装対象ファイル
 
-コアビジネスロジックを含む重要なPythonモジュール
+| ファイル | 現在行数 | 追加見積 | 説明 |
+|---------|---------|---------|------|
+| `python-trainer/src/trainer/main.py` | 128行 | +120行 | パイプライン実装、エラーハンドリング、ロギング追加 |
+| `config/app_settings.json` | 17行 | +10行 | 訓練設定セクション追加 |
 
-| Task ID | ファイル | 作業内容 | 見積時間 |
-|---------|---------|---------|----------|
-| T-001 | `main.py` | モジュールdocstring、型ヒント、関数docstring追加 | 15分 |
-| T-002 | `python-trainer/src/trainer/data_loader.py` | モジュールdocstring、クラス・メソッドdocstring、型ヒント追加 | 45分 |
-| T-003 | `python-trainer/src/trainer/model_trainer.py` | モジュールdocstring、クラス・メソッドdocstring、型ヒント追加 | 60分 |
-| T-004 | `python-trainer/src/trainer/preprocessor.py` | モジュールdocstring、クラス・メソッドdocstring、型ヒント追加 | 45分 |
-| T-005 | `python-trainer/src/analysis/drift_detector.py` | モジュールdocstring、クラス・メソッドdocstring、型ヒント追加 | 45分 |
+---
 
-**Phase 1 合計**: 約3.5時間
+## 実装タスク
 
-### Phase 2: Python Supporting Modules ✅
+### Task 1: 設定・スキーマ読み込み処理 (1時間)
 
-補助的なPythonモジュール
+**目的**: JSON設定ファイルとスキーマ定義を読み込む
 
-| Task ID | ファイル | 作業内容 | 見積時間 | 状態 |
-|---------|---------|---------|----------|------|
-| T-006 | `python-trainer/src/trainer/onnx_converter.py` | モジュールdocstring、関数docstring、型ヒント追加 | 30分 | ✅ Done |
-| T-007 | `python-trainer/src/trainer/report_generator.py` | モジュールdocstring、クラス・メソッドdocstring、型ヒント追加 | 45分 | ✅ Done |
-| T-008 | `python-trainer/src/trainer/main.py` | モジュールdocstring、関数docstring、型ヒント追加 | 45分 | ✅ Done |
-| T-009 | `python-trainer/src/analysis/shap_analyzer.py` | モジュールdocstring、クラス・メソッドdocstring、型ヒント追加 | 45分 | ✅ Done |
-| T-010 | `python-trainer/src/analysis/metrics_calculator.py` | モジュールdocstring、関数docstring、型ヒント追加 | 30分 | ✅ Done |
+**実装内容**:
 
-**Phase 2 合計**: 約3時間 (実績: 約3時間)
-**Phase 2 完了日**: 2025-12-07
+1. `config/app_settings.json`に訓練設定を追加:
+   ```json
+   {
+     "training": {
+       "numerical_features": ["sensor_val_1", "sensor_val_2"],
+       "categorical_features": ["product_type"],
+       "target": "defect_flag",
+       "test_size": 0.2,
+       "random_state": 42
+     }
+   }
+   ```
+
+2. `main.py`に設定読み込み関数を追加:
+   ```python
+   def load_config(config_path: str) -> Dict[str, Any]:
+       """Load configuration from JSON file."""
+       with open(config_path, 'r') as f:
+           return json.load(f)
+   
+   def load_schema(schema_path: str) -> Dict[str, Any]:
+       """Load schema definition from JSON file."""
+       with open(schema_path, 'r') as f:
+           return json.load(f)
+   ```
+
+**検証方法**:
+- config/app_settings.jsonの読み込み成功
+- config/schema.jsonの読み込み成功
+- 不正なパスでFileNotFoundErrorが発生
+
+---
+
+### Task 2: パイプライン実装 (2時間)
+
+**目的**: データ読み込み → 前処理 → 訓練 → ONNX変換の完全なフロー実装
+
+**実装内容**:
+
+1. `main()`関数内でパイプライン実装:
+   ```python
+   def main() -> None:
+       args = parser.parse_args()
+       
+       # 設定・スキーマ読み込み
+       config = load_config(args.config)
+       schema = load_schema('config/schema.json')
+       
+       # データ読み込み
+       loader = DataLoader(schema)
+       data = loader.load_data(args.data)
+       
+       # 前処理
+       preprocessor = Preprocessor(schema)
+       processed_data = preprocessor.fit_transform(data)
+       
+       # モデル訓練
+       trainer = ModelTrainer(config['training'])
+       model_path = Path(args.output) / 'model.joblib'
+       trainer.run(args.data, str(model_path))
+       
+       # ONNX変換
+       from trainer.onnx_converter import save_onnx_model
+       onnx_path = save_onnx_model(
+           trainer.model, 
+           args.output, 
+           'defect_classifier'
+       )
+       
+       # レポート生成（オプション）
+       if args.report:
+           report_dir = Path(args.output) / 'reports'
+           generator = ReportGenerator(str(report_dir))
+           # 実装詳細は後続タスクで
+   ```
+
+2. 各コンポーネントの返り値を次のステップに適切に渡す
+
+**検証方法**:
+- 完全なパイプラインの実行成功
+- models/current/model.joblibの生成
+- models/current/defect_classifier.onnxの生成
+
+---
+
+### Task 3: エラーハンドリング (1時間)
+
+**目的**: 明確なエラーメッセージと適切な例外処理
+
+**実装内容**:
+
+1. ファイル不在エラー:
+   ```python
+   try:
+       config = load_config(args.config)
+   except FileNotFoundError:
+       logger.error(f"設定ファイルが見つかりません: {args.config}")
+       sys.exit(1)
+   ```
+
+2. データ検証エラー:
+   ```python
+   try:
+       data = loader.load_data(args.data)
+   except ValueError as e:
+       logger.error(f"データ検証エラー: {str(e)}")
+       sys.exit(1)
+   ```
+
+3. 訓練エラー:
+   ```python
+   try:
+       trainer.run(args.data, str(model_path))
+   except Exception as e:
+       logger.error(f"モデル訓練中にエラーが発生しました: {str(e)}")
+       sys.exit(1)
+   ```
+
+**検証方法**:
+- 不正なファイルパスでの適切なエラーメッセージ
+- 不正なデータでの検証エラー
+- 訓練失敗時の適切なエラーハンドリング
+
+---
+
+### Task 4: ロギング追加 (30分)
+
+**目的**: 各ステップの進捗状況を日本語で出力
+
+**実装内容**:
+
+1. ロガー設定:
+   ```python
+   import logging
+   
+   logging.basicConfig(
+       level=logging.INFO,
+       format='%(asctime)s - %(levelname)s - %(message)s',
+       datefmt='%Y-%m-%d %H:%M:%S'
+   )
+   logger = logging.getLogger(__name__)
+   ```
+
+2. 各ステップでログ出力:
+   ```python
+   logger.info("訓練パイプラインを開始します")
+   logger.info(f"設定ファイル: {args.config}")
+   logger.info(f"データファイル: {args.data}")
+   logger.info(f"出力ディレクトリ: {args.output}")
+   
+   logger.info("設定を読み込んでいます...")
+   config = load_config(args.config)
+   logger.info("設定の読み込みが完了しました")
+   
+   logger.info("データを読み込んでいます...")
+   data = loader.load_data(args.data)
+   logger.info(f"データ読み込み完了: {len(data)} 件")
+   
+   # ... 以下各ステップでログ出力
+   ```
+
+**検証方法**:
+- 各ステップで適切なログが出力される
+- エラー時にERRORレベルのログが出力される
+
+---
+
+### Task 5: 統合テスト (1.5時間)
+
+**目的**: 実データでの動作確認とテストケース追加
+
+**実装内容**:
+
+1. テストデータ準備:
+   - `data/input/test_training_data.csv` を作成（小規模サンプル）
+
+2. 統合テスト実行:
+   ```bash
+   uv run trainer \
+       --data data/input/test_training_data.csv \
+       --output models/test \
+       --config config/app_settings.json \
+       --report
+   ```
+
+3. 動作確認項目:
+   - [ ] パイプラインが最後まで実行される
+   - [ ] models/test/model.joblibが生成される
+   - [ ] models/test/defect_classifier.onnxが生成される
+   - [ ] --reportオプションでレポートが生成される
+   - [ ] ログが適切に出力される
+   - [ ] エラー時に適切なメッセージが表示される
+
+**検証方法**:
+- 全ての動作確認項目が✓
+- 異常系テストでも適切にエラーハンドリングされる
+
+---
+
+## タスク進捗トラッキング
+
+| Task | 内容 | 見積 | 状態 | 備考 |
+|------|------|------|------|------|
+| T-001 | 設定・スキーマ読み込み | 1時間 | ⚪ Not Started | config追加、読み込み関数実装 |
+| T-002 | パイプライン実装 | 2時間 | ⚪ Not Started | 各コンポーネント連携 |
+| T-003 | エラーハンドリング | 1時間 | ⚪ Not Started | FileNotFound, ValueError等 |
+| T-004 | ロギング追加 | 30分 | ⚪ Not Started | 日本語メッセージ出力 |
+| T-005 | 統合テスト | 1.5時間 | ⚪ Not Started | 実データでの動作確認 |
+
+**状態凡例**:
+- ⚪ Not Started（未着手）
+- 🔵 In Progress（進行中）
+- ✅ Done（完了）
+- ⏸️ Blocked（ブロック中）
+- ❌ Cancelled（キャンセル）
 
 ### Phase 3: Java Core Services (高優先度)
 
@@ -165,14 +419,14 @@ UIコントローラとテストコード
 
 ## 総作業時間見積
 
-| フェーズ | 時間 | 実績 | 優先度 | 状態 |
-|---------|------|------|--------|------|
-| Phase 1: Python Core Modules | 3.5時間 | 3.5時間 | 最優先 | ✅ 完了 |
-| Phase 2: Python Supporting Modules | 3時間 | 3時間 | 高 | ✅ 完了 |
-| Phase 3: Java Core Services | 3.5時間 | 3.5時間 | 高 | ✅ 完了 |
-| Phase 4: Java Supporting Classes | 4時間 | 4時間 | 中 | ✅ 完了 |
-| Phase 5: Controllers and Tests | 5時間 | 5時間 | 低 | ✅ 完了 |
-| **合計** | **19時間** | **19時間** | - | **✅ 全完了** |
+| タスク | 時間 | 優先度 |
+|--------|------|--------|
+| Task 1: 設定・スキーマ読み込み | 1時間 | High |
+| Task 2: パイプライン実装 | 2時間 | Critical |
+| Task 3: エラーハンドリング | 1時間 | High |
+| Task 4: ロギング追加 | 30分 | Medium |
+| Task 5: 統合テスト | 1.5時間 | High |
+| **合計** | **6時間** | - |
 
 ---
 

@@ -87,8 +87,8 @@ def save_onnx_model(model: Any, output_dir: str, model_name: str) -> str:
     Creates the output directory if it doesn't exist.
     
     Args:
-        model (Any): Trained scikit-learn model with n_features_in_ attribute.
-                    (n_features_in_属性を持つ訓練済みscikit-learnモデル)
+        model (Any): Trained scikit-learn Pipeline model.
+                    (訓練済みscikit-learn Pipelineモデル)
         output_dir (str): Directory where ONNX model will be saved.
                          (ONNXモデルを保存するディレクトリ)
         model_name (str): Name for the ONNX model file (without extension).
@@ -114,10 +114,24 @@ def save_onnx_model(model: Any, output_dir: str, model_name: str) -> str:
     model_path = os.path.join(output_dir, f"{model_name}.onnx")
     
     # Define input types for ONNX conversion
-    # ONNX変換用の入力型を定義
+    # For Pipeline models, get n_features_in_ from the first step (preprocessor)
+    # Pipeline モデルの場合、最初のステップ（前処理器）からn_features_in_を取得
+    if hasattr(model, 'steps') and len(model.steps) > 0:
+        # Get the preprocessor (first step in pipeline)
+        # 前処理器（パイプラインの最初のステップ）を取得
+        preprocessor = model.steps[0][1]
+        if hasattr(preprocessor, 'n_features_in_'):
+            n_features = preprocessor.n_features_in_
+        else:
+            # Fallback: use a default value
+            # フォールバック: デフォルト値を使用
+            n_features = 10
+    else:
+        n_features = getattr(model, 'n_features_in_', 10)
+    
+    # ONNX変換用の入力型を定義（FloatTensorTypeのみ）
     initial_types: List[Tuple[str, Any]] = [
-        ('float_input', FloatTensorType([None, model.n_features_in_])),
-        ('string_input', StringTensorType([None, model.n_categorical_features_]))
+        ('float_input', FloatTensorType([None, n_features]))
     ]
     
     convert_model_to_onnx(model, model_path, initial_types)
