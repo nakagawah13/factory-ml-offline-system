@@ -27,6 +27,7 @@ import argparse
 import json
 import logging
 import sys
+import traceback
 from typing import Any, Dict
 
 # Import classes and functions from modules
@@ -337,7 +338,6 @@ def main() -> None:
         logger.error(f"エラー内容: {str(e)}")
         logger.error("")
         logger.error("詳細なエラー情報:")
-        import traceback
         logger.error(traceback.format_exc())
         sys.exit(1)
 
