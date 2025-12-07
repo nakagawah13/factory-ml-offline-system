@@ -123,7 +123,7 @@ def save_onnx_model(model: Any, output_dir: str, model_name: str) -> str:
         if hasattr(preprocessor, 'n_features_in_'):
             n_features = preprocessor.n_features_in_
         else:
-            # Fail-fast: raise if n_features_in_ is missing
+            # fail-fast: raise if n_features_in_ is missing
             # フェイルファスト: n_features_in_がない場合はエラー
             raise AttributeError(
                 "Preprocessor lacks 'n_features_in_' attribute. "
