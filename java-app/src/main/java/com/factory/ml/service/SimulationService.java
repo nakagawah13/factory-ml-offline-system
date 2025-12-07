@@ -36,8 +36,12 @@ public class SimulationService {
      * simulation calls, avoiding repeated model loading.
      * 
      * @param inferenceService Pre-initialized inference service
+     * @throws IllegalArgumentException if inferenceService is null
      */
     public SimulationService(InferenceService inferenceService) {
+        if (inferenceService == null) {
+            throw new IllegalArgumentException("InferenceService cannot be null");
+        }
         this.inferenceService = inferenceService;
     }
     

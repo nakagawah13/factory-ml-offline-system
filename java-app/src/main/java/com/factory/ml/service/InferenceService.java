@@ -67,7 +67,11 @@ public class InferenceService {
     public InferenceResult predict(FloatBuffer floats, String[] strings, boolean useCandidate) throws OrtException {
         OrtSession session = useCandidate ? candidateSession : currentSession;
 
-        // Convert FloatBuffer to float array
+        // Convert FloatBuffer to float array for ONNX tensor creation
+        // Note: This involves FloatBuffer → float[] → FloatBuffer conversion.
+        // The intermediate array is required because OnnxTensor.createTensor()
+        // needs explicit shape specification (new long[]{1, length}).
+        // Direct FloatBuffer pass-through is not supported by ONNX Runtime API.
         float[] floatArray = new float[floats.remaining()];
         floats.get(floatArray);
         floats.rewind();

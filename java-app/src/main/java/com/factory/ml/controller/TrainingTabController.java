@@ -116,6 +116,13 @@ public class TrainingTabController {
         try {
             List<String[]> csvRows = loadCsvRows(filePath);
             // TODO: Implement proper schema loading from config/schema.json
+            //       Current implementation uses an empty Schema placeholder which won't
+            //       perform meaningful validation. This should be addressed to:
+            //       1. Load actual schema definition from config/schema.json
+            //       2. Parse required columns, data types, and constraints
+            //       3. Enable effective data validation for training data
+            //       Tracked for future improvement - schema validation is out of scope
+            //       for the compilation fix PR (Issue #10).
             Schema schema = new Schema("1.0", new ArrayList<>());
             List<ValidationError> errors = dataValidator.validate(csvRows, schema);
             validationErrorsListView.getItems().clear();

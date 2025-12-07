@@ -92,7 +92,16 @@ public class InputRow {
      * Iterates through all features and extracts numeric values, converting
      * them to float type. Returns a FloatBuffer suitable for ONNX model input.
      * 
-     * @return FloatBuffer containing all numeric feature values
+     * <p><b>Important:</b> This method relies on LinkedHashMap's insertion order
+     * to maintain feature ordering. Features must be inserted in the exact order
+     * expected by the ONNX model. Consider using explicit feature name ordering
+     * or validation in production code to ensure correctness.</p>
+     * 
+     * <p>Current implementation extracts all numeric features in insertion order.
+     * If feature ordering is critical for model inference, callers should ensure
+     * features are added to InputRow in the correct sequence.</p>
+     * 
+     * @return FloatBuffer containing all numeric feature values in insertion order
      */
     public FloatBuffer getFloatInput() {
         List<Float> floatValues = new ArrayList<>();
