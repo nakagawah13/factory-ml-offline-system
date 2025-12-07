@@ -354,11 +354,11 @@ trainer/main.pyで必要となる設定を`config/app_settings.json`に追加:
 
 | Task | 内容 | 見積 | 状態 | 備考 |
 |------|------|------|------|------|
-| T-001 | 設定・スキーマ読み込み | 1時間 | ⚪ Not Started | config追加、読み込み関数実装 |
-| T-002 | パイプライン実装 | 2時間 | ⚪ Not Started | 各コンポーネント連携 |
-| T-003 | エラーハンドリング | 1時間 | ⚪ Not Started | FileNotFound, ValueError等 |
-| T-004 | ロギング追加 | 30分 | ⚪ Not Started | 日本語メッセージ出力 |
-| T-005 | 統合テスト | 1.5時間 | ⚪ Not Started | 実データでの動作確認 |
+| T-001 | 設定・スキーマ読み込み | 1時間 | ✅ Done | config追加、読み込み関数実装 |
+| T-002 | パイプライン実装 | 2時間 | ✅ Done | 各コンポーネント連携 |
+| T-003 | エラーハンドリング | 1時間 | ✅ Done | FileNotFound, ValueError等 |
+| T-004 | ロギング追加 | 30分 | ✅ Done | 日本語メッセージ出力 |
+| T-005 | 統合テスト | 1.5時間 | ✅ Done | 実データでの動作確認 |
 
 **状態凡例**:
 - ⚪ Not Started（未着手）

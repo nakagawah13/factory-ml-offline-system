@@ -24,5 +24,6 @@
       "type": "NUMERIC",
       "required": true
     }
+    // Total of 3 columns defined. Additional columns can be added as needed.
   ]
 }
