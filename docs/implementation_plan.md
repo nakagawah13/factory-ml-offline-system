@@ -8,7 +8,7 @@
 **ブランチ**: `chore/remove-empty-temporary-directory`
 **作成日**: 2025-12-07
 **優先度**: Low
-**見積時間**: 5分
+**見積時間**: 6分
 
 ---
 
@@ -27,10 +27,11 @@ drwxr-xr-x 3 nakagawa6 nakagawa6 4096 Dec  7 18:30 ..
 
 完全に空のディレクトリです。
 
+
 `.github/instructions/ai-project-structure-core.instructions.md` では以下のように禁止されています:
 
+```
 ❌ 絶対禁止
----
 temp/, tmp/, test_folder/, experiment/, sandbox/
 ```
 
@@ -137,7 +138,7 @@ git push -u origin chore/remove-empty-temporary-directory
 ## 総作業時間見積
 
 | フェーズ | 見積時間 |
-|---------|---------||
+|---------|---------|
 | Task 1: 一時ディレクトリ削除 | 2分 |
 | Task 2: ドキュメント更新 | 2分 |
 | Task 3: コミット・プッシュ | 1分 |
