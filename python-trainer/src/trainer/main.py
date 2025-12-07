@@ -33,7 +33,6 @@ from typing import Any, Dict
 # Import classes and functions from modules
 # モジュールからクラスと関数をインポート
 from trainer.data_loader import DataLoader
-from trainer.preprocessor import Preprocessor
 from trainer.model_trainer import ModelTrainer
 
 # Configure logging
@@ -241,15 +240,19 @@ def main() -> None:
         logger.info("ステップ3: データを検証しています...")
         
         # Note: Data preprocessing is handled internally by ModelTrainer
-        # The Preprocessor class provides schema-based validation and feature info
+        # Data validation is performed here by checking required columns
         # 注: データ前処理はModelTrainerが内部で実行します
-        # Preprocessorクラスはスキーマベースの検証と特徴量情報を提供します
-        preprocessor = Preprocessor(schema)
-        # Perform fit_transform to validate data structure and get feature count
-        # データ構造の検証と特徴量数の取得のためfit_transformを実行
-        processed_data = preprocessor.fit_transform(data)
+        # ここではスキーマ定義に基づいて必須カラムの存在確認のみ行います
+        required_columns = (schema.get('numerical_features', []) + 
+                          schema.get('categorical_features', []) + 
+                          [schema.get('target', 'label')])
+        missing_columns = [col for col in required_columns if col not in data.columns]
+        if missing_columns:
+            raise ValueError(f"必須カラムが不足しています: {missing_columns}")
+        
         logger.info("  ✓ データ検証完了")
-        logger.info(f"  検証済み特徴量数: {processed_data.shape[1]}")
+        logger.info(f"  データ行数: {len(data)}")
+        logger.info(f"  カラム数: {len(data.columns)}")
         logger.info("")
         
         # Step 4: Train model
@@ -273,7 +276,7 @@ def main() -> None:
         # Step 5: Convert to ONNX (Optional - skipped for now due to complexity)
         # ステップ5: ONNX変換(オプション - 複雑性のため現在はスキップ)
         logger.info("ステップ5: ONNX変換をスキップ...")
-        logger.info("  ℹ️  ONNX変換は別途実装が必要です")
+        logger.info("  ℹ ONNX変換は別途実装が必要です")
         logger.info("  現在はjoblib形式のモデルを使用してください")
         logger.info("")
         
