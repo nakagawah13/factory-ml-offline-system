@@ -223,11 +223,11 @@ gh pr create \
 
 | Task | 内容 | 見積 | 状態 | 備考 |
 |------|------|------|------|------|
-| T-001 | 既存ファイルの削除 | 5分 | ⚪ Not Started | models/archive, models/currentを削除 |
-| T-002 | ディレクトリ作成と.gitkeep追加 | 5分 | ⚪ Not Started | 空ディレクトリ管理 |
-| T-003 | 構造検証 | 5分 | ⚪ Not Started | ディレクトリ構造確認 |
-| T-004 | コミットとプッシュ | 5分 | ⚪ Not Started | リモートへの反映 |
-| T-005 | PR作成 | 10分 | ⚪ Not Started | GitHubでPR作成 |
+| T-001 | 既存ファイルの削除 | 5分 | ✅ Done | git rm で削除完了 |
+| T-002 | ディレクトリ作成と.gitkeep追加 | 5分 | ✅ Done | mkdir, touch, git add -f で完了 |
+| T-003 | 構造検証 | 5分 | ✅ Done | file, ls -la で確認完了 |
+| T-004 | コミットとプッシュ | 5分 | ✅ Done | 2コミット、強制プッシュ完了 |
+| T-005 | PR作成 | 10分 | ✅ Done | PR #27 作成・本文更新完了 |
 
 **状態凡例**:
 - ⚪ Not Started（未着手）
