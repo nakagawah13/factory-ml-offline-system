@@ -6,6 +6,8 @@ and report generation based on command-line arguments.
 
 Main Components:
     - main(): Entry point function that orchestrates the pipeline
+    - load_config(): Load configuration from JSON file
+    - load_schema(): Load schema definition from JSON file
 
 Project Context:
     Entry point for the python-trainer component. Called from the command line
@@ -16,21 +18,101 @@ Example:
     >>> python -m trainer.main \
     ...     --data data/input/training_data.csv \
     ...     --output models/current \
-    ...     --config config/model_config.json \
+    ...     --config config/app_settings.json \
     ...     --report
 """
 
 from pathlib import Path
 import argparse
-from typing import Any
+import json
+import logging
+import sys
+import traceback
+from typing import Any, Dict
 
 # Import classes and functions from modules
 # モジュールからクラスと関数をインポート
 from trainer.data_loader import DataLoader
-from trainer.preprocessor import Preprocessor
 from trainer.model_trainer import ModelTrainer
-from trainer.report_generator import ReportGenerator
-# Note: onnx_converter is function-based, will be imported when needed
+
+# Configure logging
+# ロギング設定
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
+
+
+def log_error_section(title: str, message: str) -> None:
+    """Log error with consistent formatting.
+    
+    This helper function reduces duplication in error handling blocks
+    by centralizing the error logging format.
+    
+    Args:
+        title (str): Error title to display.
+        message (str): Detailed error message.
+    """
+    logger.error("")
+    logger.error("=" * 60)
+    logger.error(f"❌ {title}")
+    logger.error("=" * 60)
+    logger.error(message)
+    logger.error("")
+
+
+def load_config(config_path: str) -> Dict[str, Any]:
+    """Load configuration from JSON file.
+    
+    Args:
+        config_path (str): Path to the configuration JSON file.
+                          (設定JSONファイルのパス)
+    
+    Returns:
+        Dict[str, Any]: Configuration dictionary.
+                       (設定辞書)
+    
+    Raises:
+        FileNotFoundError: If configuration file is not found.
+                          (設定ファイルが見つからない場合)
+        ValueError: If JSON format is invalid.
+                   (JSON形式が不正な場合)
+    """
+    try:
+        with open(config_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError as e:
+        raise FileNotFoundError(f"設定ファイルが見つかりません: {config_path}") from e
+    except json.JSONDecodeError as e:
+        raise ValueError(f"設定ファイルのJSON形式が不正です: {config_path}\n詳細: {str(e)}") from e
+
+
+def load_schema(schema_path: str) -> Dict[str, Any]:
+    """Load schema definition from JSON file.
+    
+    Args:
+        schema_path (str): Path to the schema JSON file.
+                          (スキーマJSONファイルのパス)
+    
+    Returns:
+        Dict[str, Any]: Schema dictionary.
+                       (スキーマ辞書)
+    
+    Raises:
+        FileNotFoundError: If schema file is not found.
+                          (スキーマファイルが見つからない場合)
+        ValueError: If JSON format is invalid.
+                   (JSON形式が不正な場合)
+    """
+    try:
+        with open(schema_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError as e:
+        raise FileNotFoundError(f"スキーマファイルが見つかりません: {schema_path}") from e
+    except json.JSONDecodeError as e:
+        raise ValueError(f"スキーマファイルのJSON形式が不正です: {schema_path}\n詳細: {str(e)}") from e
 
 
 def main() -> None:
@@ -95,33 +177,180 @@ def main() -> None:
         action='store_true',
         help='Generate analysis report (SHAP, metrics, drift)'
     )
+    parser.add_argument(
+        '--schema',
+        type=str,
+        default='config/schema.json',
+        help='Path to schema JSON file (default: config/schema.json)'
+    )
 
     args = parser.parse_args()
 
-    print("Training pipeline started.")
-    print(f"Data: {args.data}")
-    print(f"Output: {args.output}")
-    print(f"Config: {args.config}")
-    print(f"Generate report: {args.report}")
+    logger.info("=" * 60)
+    logger.info("訓練パイプラインを開始します")
+    logger.info("=" * 60)
+    logger.info(f"データファイル: {args.data}")
+    logger.info(f"出力ディレクトリ: {args.output}")
+    logger.info(f"設定ファイル: {args.config}")
+    logger.info(f"レポート生成: {args.report}")
+    logger.info("")
     
-    # TODO: Implement full pipeline
-    # This is a placeholder implementation for dependency migration testing
-    # 完全なパイプラインの実装は今後のタスクとなります
-    
-    # Example usage (commented out until implementation is complete):
-    # loader = DataLoader(schema)
-    # data = loader.load_data(args.data)
-    # transformer = FeatureTransformer()
-    # processed_data = transformer.transform(data)
-    # trainer = ModelTrainer(config)
-    # model = trainer.train(processed_data)
-    # converter = OnnxConverter()
-    # converter.convert(model, Path(args.output) / 'model.onnx')
-    # if args.report:
-    #     generator = ReportGenerator()
-    #     generator.generate(processed_data, model, args.output)
-    
-    print("Training pipeline completed (placeholder mode).")
+    try:
+        # Step 1: Load configuration and schema
+        # ステップ1: 設定とスキーマの読み込み
+        logger.info("ステップ1: 設定とスキーマを読み込んでいます...")
+        
+        config = load_config(args.config)
+        logger.info(f"  ✓ 設定ファイル読み込み完了: {args.config}")
+        
+        # Load schema from specified path
+        # 指定されたパスからスキーマを読み込み
+        schema = load_schema(args.schema)
+        logger.info(f"  ✓ スキーマファイル読み込み完了: {args.schema}")
+        logger.info("")
+        
+        # Validate training configuration exists
+        # 訓練設定の存在を検証
+        if 'training' not in config:
+            raise ValueError(
+                "設定ファイルに'training'セクションが見つかりません。\n"
+                "config/app_settings.jsonに訓練設定を追加してください。"
+            )
+        
+        training_config = config['training']
+        logger.info("  訓練設定:")
+        logger.info(f"    - 数値特徴量: {training_config.get('numerical_features', [])}")
+        logger.info(f"    - カテゴリ特徴量: {training_config.get('categorical_features', [])}")
+        logger.info(f"    - ターゲット: {training_config.get('target', 'label')}")
+        logger.info(f"    - テストサイズ: {training_config.get('test_size', 0.2)}")
+        logger.info("")
+        
+        # Step 2: Load data
+        # ステップ2: データ読み込み
+        logger.info("ステップ2: データを読み込んでいます...")
+        
+        loader = DataLoader(schema)
+        data = loader.load_data(args.data)
+        logger.info(f"  ✓ データ読み込み完了: {len(data)} 件")
+        logger.info(f"  カラム数: {len(data.columns)}")
+        logger.info("")
+        
+        # Step 3: Validate data
+        # ステップ3: データバリデーション
+        logger.info("ステップ3: データを検証しています...")
+        
+        # Note: Data preprocessing is handled internally by ModelTrainer
+        # Data validation is performed here by checking required columns
+        # 注: データ前処理はModelTrainerが内部で実行します
+        # ここではスキーマ定義に基づいて必須カラムの存在確認のみ行います
+        required_columns = (schema.get('numerical_features', []) + 
+                          schema.get('categorical_features', []) + 
+                          [schema.get('target', 'label')])
+        missing_columns = [col for col in required_columns if col not in data.columns]
+        if missing_columns:
+            raise ValueError(f"必須カラムが不足しています: {missing_columns}")
+        
+        logger.info("  ✓ データ検証完了")
+        logger.info(f"  データ行数: {len(data)}")
+        logger.info(f"  カラム数: {len(data.columns)}")
+        logger.info("")
+        
+        # Step 4: Train model
+        # ステップ4: モデル訓練
+        logger.info("ステップ4: モデルを訓練しています...")
+        
+        # Create output directory if it doesn't exist
+        # 出力ディレクトリが存在しない場合は作成
+        output_dir = Path(args.output)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        # ModelTrainer.run() performs its own data loading and preprocessing
+        # ModelTrainer.run()は内部でデータ読み込みと前処理を実行します
+        trainer = ModelTrainer(training_config)
+        model_path = output_dir / 'model.joblib'
+        trainer.run(args.data, str(model_path))
+        logger.info("  ✓ モデル訓練完了")
+        logger.info(f"  モデル保存先: {model_path}")
+        logger.info("")
+        
+        # Step 5: Convert to ONNX (Optional - skipped for now due to complexity)
+        # ステップ5: ONNX変換(オプション - 複雑性のため現在はスキップ)
+        logger.info("ステップ5: ONNX変換をスキップ...")
+        logger.info("  ℹ ONNX変換は別途実装が必要です")
+        logger.info("  現在はjoblib形式のモデルを使用してください")
+        logger.info("")
+        
+        # ONNX conversion is not yet supported - reserved for future implementation
+        # This variable is used in the final summary section below
+        onnx_path = None
+        
+        # TODO(Issue #23): Implement ONNX conversion with correct column name matching
+        # See issue for details on ColumnTransformer complexity
+        # 
+        # from trainer.onnx_converter import save_onnx_model
+        # import joblib
+        # model = joblib.load(str(model_path))
+        # onnx_path = save_onnx_model(model, str(output_dir), 'defect_classifier')
+        
+        # Step 6: Generate report (optional)
+        # ステップ6: レポート生成（オプション）
+        report_path = None
+        if args.report:
+            logger.info("ステップ6: レポートを生成しています...")
+            
+            report_dir = output_dir / 'reports'
+            report_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Generate basic metrics report
+            # 基本的なメトリクスレポートを生成
+            # Note: Full report generation requires model evaluation results
+            # 注: 完全なレポート生成にはモデル評価結果が必要
+            metrics = {
+                'model_path': str(model_path),
+                'onnx_path': str(onnx_path) if onnx_path else None,
+                'data_shape': list(data.shape),
+                'training_config': training_config
+            }
+            
+            report_path = report_dir / 'training_summary.json'
+            with open(report_path, 'w', encoding='utf-8') as f:
+                json.dump(metrics, f, indent=2, ensure_ascii=False)
+            
+            logger.info("  ✓ レポート生成完了")
+            logger.info(f"  レポート保存先: {report_path}")
+            logger.info("")
+        
+        # Success message
+        # 成功メッセージ
+        logger.info("=" * 60)
+        logger.info("✓ 訓練パイプラインが正常に完了しました")
+        logger.info("=" * 60)
+        logger.info("出力ファイル:")
+        logger.info(f"  - モデル: {model_path}")
+        # Note: ONNX output will be added when Issue #23 is implemented
+        if args.report and report_path:
+            logger.info(f"  - レポート: {report_path}")
+        logger.info("")
+        
+    except FileNotFoundError as e:
+        log_error_section("ファイルが見つかりません", str(e))
+        sys.exit(1)
+        
+    except ValueError as e:
+        log_error_section("データ検証エラー", str(e))
+        sys.exit(1)
+        
+    except Exception as e:
+        logger.error("")
+        logger.error("=" * 60)
+        logger.error("❌ 予期しないエラーが発生しました")
+        logger.error("=" * 60)
+        logger.error(f"エラータイプ: {type(e).__name__}")
+        logger.error(f"エラー内容: {str(e)}")
+        logger.error("")
+        logger.error("詳細なエラー情報:")
+        logger.error(traceback.format_exc())
+        sys.exit(1)
 
 
 if __name__ == '__main__':

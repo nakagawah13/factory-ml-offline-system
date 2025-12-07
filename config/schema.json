@@ -18,7 +18,11 @@
       "type": "NUMERIC",
       "min": 0.0,
       "max": 1000.0
+    },
+    {
+      "name": "label",
+      "type": "NUMERIC",
+      "required": true
     }
-    // ... 合計165列分
   ]
 }

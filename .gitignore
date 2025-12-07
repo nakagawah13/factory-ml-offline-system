@@ -235,3 +235,9 @@ data/
 # data/**/*.parquet
 # data/**/*.pkl
 # data/**/*.pickle
+
+# Models directory - trained models and ONNX files
+models/
+!models/.gitkeep
+!models/current/.gitkeep
+!models/archive/.gitkeep
