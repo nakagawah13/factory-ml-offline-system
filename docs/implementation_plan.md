@@ -243,7 +243,7 @@ gh pr create \
 | Task | 内容 | 見積 | 状態 | 備考 |
 |------|------|------|------|------|
 | T-001 | 既存ファイルの削除 | 5分 | ✅ Done | git rm で削除完了 |
-| T-002 | ディレクトリ作成と.gitkeep追加 | 5分 | ✅ Done | mkdir, touch, git add で完了 |
+| T-002 | ディレクトリ作成と.gitkeep追加 | 5分 | ✅ Done | mkdir, touch, git add で完了（.gitkeepは-f不要） |
 | T-003 | 構造検証とドキュメント作成 | 5分 | ✅ Done | 構造確認とREADME.md作成完了 |
 | T-004 | コミットとプッシュ | 5分 | ✅ Done | 3コミット、プッシュ完了 |
 | T-005 | PR作成 | 10分 | ✅ Done | PR #27 作成・本文更新完了 |
