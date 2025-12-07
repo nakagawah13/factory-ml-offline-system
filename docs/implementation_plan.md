@@ -145,9 +145,9 @@ git add models/archive/.gitkeep models/current/.gitkeep
 
 ---
 
-### Task 3: 構造検証とドキュメント確認 (5分)
+### Task 3: 構造検証とドキュメント作成 (5分)
 
-**目的**: 変更が正しく適用されているか確認し、models/README.mdの作成を検討
+**目的**: 変更が正しく適用されているか確認し、models/README.mdを作成
 
 **実装内容**:
 
@@ -160,10 +160,11 @@ git add models/archive/.gitkeep models/current/.gitkeep
    tree models/
    ```
 
-2. (オプション) models/README.md作成:
+2. models/README.md作成:
    - 削除した2つのファイルの内容を統合
    - archive/とcurrent/の役割を説明
    - 命名規則とバージョニングポリシーを記載
+   - test/ディレクトリについても記載（既存ディレクトリ）
 
 **検証方法**:
 - `file models/archive`が`directory`を返す
@@ -179,19 +180,26 @@ git add models/archive/.gitkeep models/current/.gitkeep
 
 **実装コマンド**:
 ```bash
-# コミット
-git commit -m "fix: convert models/archive and models/current from files to directories
+# コミット（複数行メッセージはエディタ使用を推奨）
+# git commit を実行してエディタで以下のメッセージを入力:
+git commit
 
-- Remove text files that were incorrectly used as directories
-- Create proper directory structure with .gitkeep files
-- This fixes model save/load functionality in training pipeline
-- This unblocks Java-Python integration testing (Issue #12)
-
-Closes #15"
+# メッセージ内容:
+# fix: convert models/archive and models/current from files to directories
+# 
+# - Remove text files that were incorrectly used as directories
+# - Create proper directory structure with .gitkeep files
+# - This fixes model save/load functionality in training pipeline
+# - This unblocks Java-Python integration testing (Issue #12)
+# 
+# Closes #15
 
 # プッシュ
 git push -u origin fix/directory-structure-models-data
 ```
+
+**Note**: 複数行のコミットメッセージは `git commit` でエディタを開いて入力することを推奨します。
+Bash で直接入力する場合は改行を含む文字列として記述してください。
 
 **検証方法**:
 - コミットが正常に作成される
@@ -228,8 +236,8 @@ gh pr create \
 |------|------|------|------|------|
 | T-001 | 既存ファイルの削除 | 5分 | ✅ Done | git rm で削除完了 |
 | T-002 | ディレクトリ作成と.gitkeep追加 | 5分 | ✅ Done | mkdir, touch, git add で完了 |
-| T-003 | 構造検証 | 5分 | ✅ Done | file, ls -la で確認完了 |
-| T-004 | コミットとプッシュ | 5分 | ✅ Done | 2コミット、強制プッシュ完了 |
+| T-003 | 構造検証とドキュメント作成 | 5分 | ✅ Done | 構造確認とREADME.md作成完了 |
+| T-004 | コミットとプッシュ | 5分 | ✅ Done | 2コミット、プッシュ完了 |
 | T-005 | PR作成 | 10分 | ✅ Done | PR #27 作成・本文更新完了 |
 
 **状態凡例**:

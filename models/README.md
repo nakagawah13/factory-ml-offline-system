@@ -41,10 +41,13 @@ Contains archived machine learning models for version history and rollback capab
 
 Contains test models and reports for development and testing purposes.
 
+**Status**: This directory exists in the repository and contains test fixtures for unit testing.
+
 **Contents**:
-- Test models for unit tests and integration tests
-- Training reports and evaluation metrics
+- Test models for unit tests and integration tests (`model.joblib`)
+- Training reports and evaluation metrics (`reports/training_summary.json`)
 - Experimental models not ready for production
+- Content is populated as needed for testing purposes
 
 ## Git Management
 
