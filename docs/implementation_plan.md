@@ -127,7 +127,8 @@ git push -u origin chore/remove-empty-temporary-directory
 |------|------|------|------|------|
 | T-001 | 一時ディレクトリの削除 | 2分 | ✅ Done | rm -rf で削除完了 |
 | T-002 | implementation_plan.md更新 | 2分 | ✅ Done | Issue #16対応に書き換え |
-| T-003 | コミットとプッシュ | 1分 | 🔵 In Progress | 次のステップ |
+| T-003 | コミットとプッシュ | 1分 | ✅ Done | コミット・プッシュ完了 |
+| T-004 | PR作成 | 1分 | ✅ Done | PR #29 作成完了 |
 
 **状態凡例**:
 - ⚪ Not Started（未着手）
@@ -147,11 +148,14 @@ git push -u origin chore/remove-empty-temporary-directory
 
 ## 次のステップ
 
-実装計画に従い、以下の順序でタスクを実施:
+実装計画に従い、以下の順序でタスクを実施（すべて完了）:
 
 1. ✅ Task 1: 一時ディレクトリの削除
 2. ✅ Task 2: implementation_plan.md更新
-3. 🔵 Task 3: コミットとプッシュ
+3. ✅ Task 3: コミットとプッシュ
+4. ✅ Task 4: PR作成
+
+**PR**: https://github.com/nakagawah13/factory-ml-offline-system/pull/29
 
 ## 参考資料
 
