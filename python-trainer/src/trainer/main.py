@@ -260,14 +260,11 @@ def main() -> None:
         logger.info("")
         
         # ONNX conversion is not yet supported - reserved for future implementation
-        # This variable is used in the final summary (line 308)
+        # This variable is used in the final summary section below
         onnx_path = None
         
-        # TODO(Issue #23): Implement proper ONNX conversion with correct input column names
-        # Expected completion: 2025-Q1
-        # The current challenge is matching the ColumnTransformer's expected
-        # column names with the ONNX initial_types parameter
-        # Blockers: Column name matching between ColumnTransformer and skl2onnx
+        # TODO(Issue #23): Implement ONNX conversion with correct column name matching
+        # See issue for details on ColumnTransformer complexity
         # 
         # from trainer.onnx_converter import save_onnx_model
         # import joblib

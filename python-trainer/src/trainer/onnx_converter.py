@@ -121,7 +121,7 @@ def save_onnx_model(model: Any, output_dir: str, model_name: str) -> str:
         # 前処理器（パイプラインの最初のステップ）を取得
         preprocessor = model.steps[0][1]
         if hasattr(preprocessor, 'n_features_in_'):
-            n_features = preprocessor.n_features_in_
+            n_features_in = preprocessor.n_features_in_
         else:
             # fail-fast: raise if n_features_in_ is missing
             # フェイルファスト: n_features_in_がない場合はエラー
@@ -131,7 +131,7 @@ def save_onnx_model(model: Any, output_dir: str, model_name: str) -> str:
             )
     else:
         if hasattr(model, 'n_features_in_'):
-            n_features = model.n_features_in_
+            n_features_in = model.n_features_in_
         else:
             raise AttributeError(
                 "Model lacks 'n_features_in_' attribute. "
@@ -140,7 +140,7 @@ def save_onnx_model(model: Any, output_dir: str, model_name: str) -> str:
     
     # ONNX変換用の入力型を定義（FloatTensorTypeのみ）
     initial_types: List[Tuple[str, Any]] = [
-        ('float_input', FloatTensorType([None, n_features]))
+        ('float_input', FloatTensorType([None, n_features_in]))
     ]
     
     convert_model_to_onnx(model, model_path, initial_types)
