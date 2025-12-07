@@ -1,8 +1,9 @@
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 import com.factory.ml.service.DataValidator;
 import com.factory.ml.model.ValidationError;
+import com.factory.ml.model.Schema;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class DataValidatorTest {
      * 
      * Initializes a new DataValidator instance.
      */
-    @BeforeEach
+    @Before
     public void setUp() {
         dataValidator = new DataValidator();
     }
@@ -40,8 +41,10 @@ public class DataValidatorTest {
         validData.add(new String[]{"2023-01-01", "A", "100"});
         validData.add(new String[]{"2023-01-02", "B", "200"});
 
-        List<ValidationError> errors = dataValidator.validate(validData, /* schema object */);
-        assertTrue(errors.isEmpty(), "Validation should pass for valid data");
+        // Create a minimal schema for testing
+        Schema schema = new Schema("1.0", new ArrayList<>());
+        List<ValidationError> errors = dataValidator.validate(validData, schema);
+        assertTrue("Validation should pass for valid data", errors.isEmpty());
     }
 
     /**
@@ -56,8 +59,10 @@ public class DataValidatorTest {
         invalidData.add(new String[]{"2023-01-01", "A", "invalid_number"});
         invalidData.add(new String[]{"2023-01-02", "Invalid_Category", "200"});
 
-        List<ValidationError> errors = dataValidator.validate(invalidData, /* schema object */);
-        assertFalse(errors.isEmpty(), "Validation should fail for invalid data");
+        // Create a minimal schema for testing
+        Schema schema = new Schema("1.0", new ArrayList<>());
+        List<ValidationError> errors = dataValidator.validate(invalidData, schema);
+        assertFalse("Validation should fail for invalid data", errors.isEmpty());
     }
 
     /**
@@ -69,7 +74,9 @@ public class DataValidatorTest {
     public void testValidateEmptyData() {
         List<String[]> emptyData = new ArrayList<>();
 
-        List<ValidationError> errors = dataValidator.validate(emptyData, /* schema object */);
-        assertFalse(errors.isEmpty(), "Validation should fail for empty data");
+        // Create a minimal schema for testing
+        Schema schema = new Schema("1.0", new ArrayList<>());
+        List<ValidationError> errors = dataValidator.validate(emptyData, schema);
+        assertFalse("Validation should fail for empty data", errors.isEmpty());
     }
 }
