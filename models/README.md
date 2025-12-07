@@ -39,15 +39,19 @@ Contains archived machine learning models for version history and rollback capab
 
 ## Test Directory (`test/`)
 
-Contains test models and reports for development and testing purposes.
+Contains test models and reports intended for development and local testing.
 
-**Status**: This directory exists in the repository and contains test fixtures for unit testing.
+**Status**: This directory may be present locally for development and testing, but it is not guaranteed to be tracked in Git because `models/` is ignored by default. Do not assume the `test/` directory exists in all clones of the repository.
 
-**Contents**:
-- Test models for unit tests and integration tests (`model.joblib`)
-- Training reports and evaluation metrics (`reports/training_summary.json`)
+**If present (local workflows)**:
+- Test models for unit tests and integration tests (example: `model.joblib`)
+- Training reports and evaluation metrics (example: `reports/training_summary.json`)
 - Experimental models not ready for production
-- Content is populated as needed for testing purposes
+
+**Notes**:
+- Because `models/` is excluded by `.gitignore`, test fixtures under `models/test/` are typically managed locally or via CI artifacts rather than committed to the repo.
+- If you need reproducible test fixtures in the repository, consider placing small, non-sensitive fixtures under `tests/` or `data/`, or use an external artifact store (e.g. MLflow, DVC, S3/GCS) and document retrieval steps in `docs/`.
+- To track a file inside `models/` (strongly discouraged for large binaries), use `git add -f <file>` and document why the force-add is necessary.
 
 ## Git Management
 
