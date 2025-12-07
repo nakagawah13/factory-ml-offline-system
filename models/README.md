@@ -51,9 +51,9 @@ Contains test models and reports for development and testing purposes.
 **Note**: The `models/` directory is excluded in `.gitignore` to prevent large model files from being tracked in Git.
 
 - Only `.gitkeep` files are tracked to maintain directory structure
-- `.gitkeep` files are explicitly un-ignored in `.gitignore` and can be added normally (no `-f` needed)
+- `.gitkeep` files are explicitly un-ignored in `.gitignore` and can be added normally (no `-f` needed because of the un-ignore rule)
 - Actual model files (`.onnx`, `.joblib`) should be managed separately (e.g., MLflow, DVC, or cloud storage)
-- Other files (such as `.onnx`, `.joblib` models) require `git add -f <file>` to force-add
+- Other files (such as `.onnx`, `.joblib` models) require `git add -f <file>` to force-add if needed locally
 
 ## Model Deployment Workflow
 
