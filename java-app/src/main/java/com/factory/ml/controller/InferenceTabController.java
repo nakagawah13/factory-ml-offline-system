@@ -181,7 +181,11 @@ public class InferenceTabController {
             return inputRows;
         }
         
-        // First row is header
+        // ASSUMPTION: First row is header
+        // WARNING: This method assumes the CSV file has a header row.
+        // If the file contains data in the first row without headers,
+        // that data will be silently skipped, potentially causing data loss.
+        // TODO: Add header validation or make this configurable (Issue to be created)
         String[] headers = csvRows.get(0);
         
         // Convert remaining rows to InputRow objects
