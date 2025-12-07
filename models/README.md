@@ -53,10 +53,19 @@ Contains test models and reports for development and testing purposes.
 
 **Note**: The `models/` directory is excluded in `.gitignore` to prevent large model files from being tracked in Git.
 
-- Only `.gitkeep` files are tracked to maintain directory structure
-- `.gitkeep` files are explicitly un-ignored in `.gitignore` and can be added normally (no `-f` needed because of the un-ignore rule)
-- Actual model files (`.onnx`, `.joblib`) should be managed separately (e.g., MLflow, DVC, or cloud storage)
-- Other files (such as `.onnx`, `.joblib` models) require `git add -f <file>` to force-add if needed locally
+Summary of Git behavior for `models/`:
+
+1. **Default**: All files under `models/` are ignored by Git because of the `.gitignore` rule.
+
+2. **Exception — `.gitkeep` files**: `.gitkeep` files are explicitly un-ignored in `.gitignore` and can be added without `-f`. Use these to keep empty directories in the repository.
+
+3. **Exception — other files**: Actual model binaries and large artifacts (e.g., `.onnx`, `.joblib`) remain ignored by default. If you truly need to track a specific file in Git (not recommended for large artifacts), you must use `git add -f <file>` to force-add it locally.
+
+Recommendations:
+
+- Do not commit model binaries to Git for production workloads. Instead, manage them with a model registry or external storage (MLflow, DVC, S3/GCS, etc.).
+- Use `.gitkeep` only for directory presence; avoid trying to track other files under `models/` unless absolutely necessary.
+- Consider revising the `.gitignore` policy if your workflow requires versioning small artifacts in `models/`.
 
 ## Model Deployment Workflow
 
