@@ -241,3 +241,5 @@ models/
 !models/.gitkeep
 !models/current/.gitkeep
 !models/archive/.gitkeep
+# Test fixtures - large binary files
+python-trainer/tests/fixtures/models/*.joblib

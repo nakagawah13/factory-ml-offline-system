@@ -1,0 +1,21 @@
+{
+  "model_path": "python-trainer/tests/fixtures/models/model.joblib",
+  "onnx_path": null,
+  "data_shape": [
+    20,
+    4
+  ],
+  "training_config": {
+    "numerical_features": [
+      "sensor_val_1"
+    ],
+    "categorical_features": [
+      "product_type"
+    ],
+    "target": "label",
+    "test_size": 0.2,
+    "random_state": 42,
+    "n_estimators": 100,
+    "max_depth": 10
+  }
+}
