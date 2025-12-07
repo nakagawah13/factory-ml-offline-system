@@ -14,10 +14,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -143,16 +143,24 @@ public class InferenceTabController {
     /**
      * Loads CSV rows from a file.
      * 
+     * Uses Apache Commons CSV for proper CSV parsing that handles
+     * quoted fields, escaped characters, and edge cases.
+     * 
      * @param filePath Path to the CSV file
      * @return List of String arrays, each representing a CSV row
      * @throws IOException if file reading fails
      */
     private List<String[]> loadCsvRows(String filePath) throws IOException {
         List<String[]> rows = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                rows.add(line.split(","));
+        try (Reader reader = new FileReader(filePath);
+             org.apache.commons.csv.CSVParser parser = org.apache.commons.csv.CSVFormat.DEFAULT
+                     .parse(reader)) {
+            for (org.apache.commons.csv.CSVRecord record : parser) {
+                String[] row = new String[record.size()];
+                for (int i = 0; i < record.size(); i++) {
+                    row[i] = record.get(i);
+                }
+                rows.add(row);
             }
         }
         return rows;

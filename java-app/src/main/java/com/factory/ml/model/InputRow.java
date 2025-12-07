@@ -2,7 +2,7 @@ package com.factory.ml.model;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +13,9 @@ import java.util.Map;
  * and values are the corresponding feature values. Supports various data
  * types for feature values.
  * 
+ * Uses LinkedHashMap to maintain insertion order, ensuring consistent
+ * feature ordering for ONNX model input.
+ * 
  * @see FeatureTransformer
  * @see InferenceService
  */
@@ -22,10 +25,11 @@ public class InputRow {
     /**
      * Constructs an empty InputRow.
      * 
-     * Initializes the features map to store feature name-value pairs.
+     * Initializes the features map with LinkedHashMap to preserve
+     * insertion order for consistent feature extraction.
      */
     public InputRow() {
-        features = new HashMap<>();
+        features = new LinkedHashMap<>();
     }
 
     /**
@@ -33,12 +37,12 @@ public class InputRow {
      * 
      * Creates a deep copy of the features map from the provided InputRow.
      * Used for simulation scenarios where modifications are needed without
-     * affecting the original data.
+     * affecting the original data. Preserves insertion order.
      * 
      * @param other The InputRow to copy from
      */
     public InputRow(InputRow other) {
-        this.features = new HashMap<>(other.features);
+        this.features = new LinkedHashMap<>(other.features);
     }
 
     /**

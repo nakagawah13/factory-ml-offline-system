@@ -9,6 +9,8 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Controller for the Simulation view in the Factory ML GUI.
@@ -24,6 +26,7 @@ import javafx.scene.chart.XYChart;
  * @see InferenceService
  */
 public class SimulationViewController {
+    private static final Logger logger = LoggerFactory.getLogger(SimulationViewController.class);
 
     @FXML
     private Slider valueSlider;
@@ -88,7 +91,7 @@ public class SimulationViewController {
             InferenceResult result = inferenceService.predict(floatInput, stringInput, false);
             updateChart(result);
         } catch (OrtException e) {
-            System.err.println("Simulation failed: " + e.getMessage());
+            logger.error("Simulation failed: {}", e.getMessage(), e);
         }
     }
 
